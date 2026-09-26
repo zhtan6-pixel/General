@@ -1,0 +1,532 @@
+table Dataset
+	lineageTag: a466e9f4-f74a-4db6-b55e-ccef1b81bf8a
+
+	column WBS_Element
+		dataType: string
+		lineageTag: 54b2c038-6842-40ec-abae-3313d62b333b
+		summarizeBy: none
+		sourceColumn: WBS_Element
+
+		annotation SummarizationSetBy = Automatic
+
+	column WBS_Description
+		dataType: string
+		lineageTag: 6ba7f683-ae9c-4016-97dd-91e0ea9f5b89
+		summarizeBy: none
+		sourceColumn: WBS_Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column Project_ID
+		dataType: string
+		lineageTag: 39763efe-74ad-4df0-9e0e-e4b0927f74a5
+		summarizeBy: none
+		sourceColumn: Project_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Project_Name
+		dataType: string
+		lineageTag: 387bc87c-1d44-467b-a18b-6fa7146698dc
+		summarizeBy: none
+		sourceColumn: Project_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Project_Type
+		dataType: string
+		lineageTag: 366c48c2-88dd-4d90-b47e-07c37d62395d
+		summarizeBy: none
+		sourceColumn: Project_Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: 9e48b109-42bf-4bc6-b7f7-f5d728f3ba60
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 68721cb4-8544-43a1-8b1b-24fea2878fa7
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Company_Code
+		dataType: int64
+		formatString: 0
+		lineageTag: 8183675a-98b7-4e5a-8351-2293e4ed0082
+		summarizeBy: count
+		sourceColumn: Company_Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Controlling_Area
+		dataType: string
+		lineageTag: f4f9f847-72a7-40e5-92a1-f65d133d0aad
+		summarizeBy: none
+		sourceColumn: Controlling_Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column Plant
+		dataType: string
+		lineageTag: 01301ff7-4c12-4761-b597-f7c1b6494e86
+		summarizeBy: none
+		sourceColumn: Plant
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cost_Center
+		dataType: string
+		lineageTag: 0ef5effd-7573-46b4-ad58-4b18a84e90ff
+		summarizeBy: none
+		sourceColumn: Cost_Center
+
+		annotation SummarizationSetBy = Automatic
+
+	column Profit_Center
+		dataType: string
+		lineageTag: ff8ecdd0-aa03-4885-9ea6-4f6bb4fc07e9
+		summarizeBy: none
+		sourceColumn: Profit_Center
+
+		annotation SummarizationSetBy = Automatic
+
+	column PM_User_ID
+		dataType: string
+		lineageTag: bc9cab80-4957-4426-97a9-a9c91769ad34
+		summarizeBy: none
+		sourceColumn: PM_User_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Project_Manager
+		dataType: string
+		lineageTag: 52afca00-dbcc-483f-b0b6-ac785beb4a7b
+		summarizeBy: none
+		sourceColumn: Project_Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column Project_Start_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7390ebaa-efac-4933-b880-9d79901c6be3
+		summarizeBy: none
+		sourceColumn: Project_Start_Date
+
+		variation Variation
+			isDefault
+			relationship: 2a096f18-9bd2-42eb-b24c-2bbbb48fdb6d
+			defaultHierarchy: LocalDateTable_64a5e35d-ffa4-4a9a-a1db-d0d7878bb44a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Project_End_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2acaf9a2-e405-4587-a610-5c3012b90e2f
+		summarizeBy: none
+		sourceColumn: Project_End_Date
+
+		variation Variation
+			isDefault
+			relationship: a7d771cb-cfbf-4421-9bd8-0c0f612dcbae
+			defaultHierarchy: LocalDateTable_e5cc9025-1d21-4b3b-b552-22191f4e9119.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WBS_Start_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cc127da7-f49e-415f-82a4-a160133de224
+		summarizeBy: none
+		sourceColumn: WBS_Start_Date
+
+		variation Variation
+			isDefault
+			relationship: 522e5df0-d456-4d75-8d08-7b9e8c4f448b
+			defaultHierarchy: LocalDateTable_7d932117-ccd5-4704-95e7-b3c337b6c363.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WBS_End_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 19b0272c-6f2e-40e3-b938-60164628a627
+		summarizeBy: none
+		sourceColumn: WBS_End_Date
+
+		variation Variation
+			isDefault
+			relationship: 043e5434-89e1-466f-8ab2-1e0f7edfdb52
+			defaultHierarchy: LocalDateTable_ded5baad-689a-4abc-861f-782ddd422d0c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Baseline_End_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 82ab9d6e-7ad8-49cc-958a-f7936a171a61
+		summarizeBy: none
+		sourceColumn: Baseline_End_Date
+
+		variation Variation
+			isDefault
+			relationship: 6b14dbd3-79b8-488e-9423-81c032dba76a
+			defaultHierarchy: LocalDateTable_13b2326e-8358-4550-9f9e-57f7e8feda3a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Schedule_Variance_Days
+		dataType: int64
+		formatString: 0
+		lineageTag: f9e70cd3-524a-447e-bde6-6edf8a46eb20
+		summarizeBy: sum
+		sourceColumn: Schedule_Variance_Days
+
+		annotation SummarizationSetBy = Automatic
+
+	column SAP_System_Status
+		dataType: string
+		lineageTag: c2fd5a62-4eed-455e-b6dd-91358f49bd33
+		summarizeBy: none
+		sourceColumn: SAP_System_Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column SAP_User_Status
+		dataType: string
+		lineageTag: 24081214-3e58-4d21-a1a4-78affa022f98
+		summarizeBy: none
+		sourceColumn: SAP_User_Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Budget_USD
+		dataType: int64
+		formatString: 0
+		lineageTag: ee8ae742-2e94-418b-845b-308597043b6f
+		summarizeBy: sum
+		sourceColumn: Budget_USD
+
+		annotation SummarizationSetBy = Automatic
+
+	column Actual_Cost_USD
+		dataType: double
+		lineageTag: bc150107-22e9-41a5-bba8-b8e34b7fe790
+		summarizeBy: sum
+		sourceColumn: Actual_Cost_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Committed_Cost_USD
+		dataType: double
+		lineageTag: 941cb867-b266-4f09-a90f-25d6f7918ebb
+		summarizeBy: sum
+		sourceColumn: Committed_Cost_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Forecast_Cost_USD
+		dataType: double
+		lineageTag: bb16bca3-bb4e-442b-a9d0-500eec54040f
+		summarizeBy: sum
+		sourceColumn: Forecast_Cost_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Cost_Variance_USD
+		dataType: double
+		lineageTag: 89e0d193-7b92-42c3-b1fd-6a5af49bce39
+		summarizeBy: sum
+		sourceColumn: Cost_Variance_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Cost_Performance_Index
+		dataType: double
+		lineageTag: 24bee345-db27-4e5a-b293-78c396b6db9f
+		summarizeBy: sum
+		sourceColumn: Cost_Performance_Index
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Planned_Revenue_USD
+		dataType: double
+		lineageTag: 245a7cea-dfe5-486e-aba4-446b5410bbf8
+		summarizeBy: sum
+		sourceColumn: Planned_Revenue_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Actual_Revenue_USD
+		dataType: double
+		lineageTag: 10db54bd-9820-4824-b16c-9366b561c180
+		summarizeBy: sum
+		sourceColumn: Actual_Revenue_USD
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Planned_Hours
+		dataType: double
+		lineageTag: 01c9265e-ee19-49c9-a64c-74ab3868d79a
+		summarizeBy: sum
+		sourceColumn: Planned_Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Actual_Hours
+		dataType: double
+		lineageTag: eb81c3a3-abf5-471d-96c8-4effb999d49a
+		summarizeBy: sum
+		sourceColumn: Actual_Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Remaining_Hours
+		dataType: double
+		lineageTag: ddd92222-cae7-4a67-a861-c59b678d3c89
+		summarizeBy: sum
+		sourceColumn: Remaining_Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Schedule_Performance_Index
+		dataType: double
+		lineageTag: dc2a296e-ab94-4690-b2ed-be0aa4bc86ae
+		summarizeBy: sum
+		sourceColumn: Schedule_Performance_Index
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Milestone_Total
+		dataType: int64
+		formatString: 0
+		lineageTag: 5ea1bbc1-8705-43cc-b592-d900d962dee1
+		summarizeBy: sum
+		sourceColumn: Milestone_Total
+
+		annotation SummarizationSetBy = Automatic
+
+	column Milestones_Achieved
+		dataType: int64
+		formatString: 0
+		lineageTag: c002c97b-a079-4bfb-b1f5-067a1922c8f9
+		summarizeBy: sum
+		sourceColumn: Milestones_Achieved
+
+		annotation SummarizationSetBy = Automatic
+
+	column Milestone_Completion_Pct
+		dataType: double
+		lineageTag: 9a853235-76b4-40cd-977d-118f82d3f559
+		summarizeBy: sum
+		sourceColumn: Milestone_Completion_Pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Risk_Score
+		dataType: int64
+		formatString: 0
+		lineageTag: 0b2e9263-9109-4da4-80e8-5be77c65301a
+		summarizeBy: sum
+		sourceColumn: Risk_Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Category
+		dataType: string
+		lineageTag: a3fb6531-5527-46c9-835b-68261848b6ec
+		summarizeBy: none
+		sourceColumn: Risk_Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Network_Activity
+		dataType: string
+		lineageTag: cf624149-5852-45cd-96a2-9bdd494572e1
+		summarizeBy: none
+		sourceColumn: Network_Activity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Currency
+		dataType: string
+		lineageTag: 960b8b3d-29c5-494c-872d-e27fcfa6bebc
+		summarizeBy: none
+		sourceColumn: Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fiscal_Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c290279-bd20-4cce-a438-238ccf37f125
+		summarizeBy: sum
+		sourceColumn: Fiscal_Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fiscal_Period
+		dataType: int64
+		formatString: 0
+		lineageTag: ce5c7ce5-fbc3-4318-84ee-564d18a48406
+		summarizeBy: sum
+		sourceColumn: Fiscal_Period
+
+		annotation SummarizationSetBy = Automatic
+
+	column Last_Updated_By
+		dataType: string
+		lineageTag: 248a8deb-b49a-445b-9421-266af13355dd
+		summarizeBy: none
+		sourceColumn: Last_Updated_By
+
+		annotation SummarizationSetBy = Automatic
+
+	column Last_Updated_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d257ada9-d791-4f1f-a43f-99b3434390cf
+		summarizeBy: none
+		sourceColumn: Last_Updated_Date
+
+		variation Variation
+			isDefault
+			relationship: 90a64aa0-c0be-435d-8810-76e516dca0b7
+			defaultHierarchy: LocalDateTable_312b5f2f-ce3e-4105-b7b6-01972146cb6e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Data_Source
+		dataType: string
+		lineageTag: 62d9d237-5c30-4e18-9648-49a425f742f1
+		summarizeBy: none
+		sourceColumn: Data_Source
+
+		annotation SummarizationSetBy = Automatic
+
+	column Extract_Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bd90ac02-74ff-4c0b-b859-59572b5c594d
+		summarizeBy: none
+		sourceColumn: Extract_Timestamp
+
+		variation Variation
+			isDefault
+			relationship: 176afdd8-dc32-4c8f-a60f-f3f165128bb5
+			defaultHierarchy: LocalDateTable_07b7815e-db24-4257-a60b-bc0ec05c47b1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	measure TotalBudget = SUM('Dataset'[Budget_USD])
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ActualCost = SUM('Dataset'[Actual_Cost_USD])
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ForecastCost = SUM('Dataset'[Forecast_Cost_USD])
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ActualRevenue = SUM('Dataset'[Actual_Revenue_USD])
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ProjectMargin = [ActualRevenue] - [ActualCost]
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure MarginPct = DIVIDE([ProjectMargin], [ActualRevenue])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CostVariance = [ForecastCost] - [ActualCost]
+		formatString: \$#,0.00;\(\$#,0.00\);\$#,0.00
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvgCPI = AVERAGE('Dataset'[Cost_Performance_Index])
+		formatString: 0.0000;-0.0000;0.0000
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvgSPI = AVERAGE('Dataset'[Schedule_Performance_Index])
+		formatString: 0.0000;-0.0000;0.0000
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure MilestoneCompletionPct = AVERAGE('Dataset'[Milestone_Completion_Pct])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ScheduleVarianceDays = SUM('Dataset'[Schedule_Variance_Days])
+		formatString: 0;-0;0
+		displayFolder: "Project Metrics"
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Dataset = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Work\Dev\Project Analysis\Dataset.csv"),[Delimiter=",", Columns=47, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"WBS_Element", type text}, {"WBS_Description", type text}, {"Project_ID", type text}, {"Project_Name", type text}, {"Project_Type", type text}, {"Department", type text}, {"Region", type text}, {"Company_Code", Int64.Type}, {"Controlling_Area", type text}, {"Plant", type text}, {"Cost_Center", type text}, {"Profit_Center", type text}, {"PM_User_ID", type text}, {"Project_Manager", type text}, {"Project_Start_Date", type date}, {"Project_End_Date", type date}, {"WBS_Start_Date", type date}, {"WBS_End_Date", type date}, {"Baseline_End_Date", type date}, {"Schedule_Variance_Days", Int64.Type}, {"SAP_System_Status", type text}, {"SAP_User_Status", type text}, {"Budget_USD", Int64.Type}, {"Actual_Cost_USD", type number}, {"Committed_Cost_USD", type number}, {"Forecast_Cost_USD", type number}, {"Cost_Variance_USD", type number}, {"Cost_Performance_Index", type number}, {"Planned_Revenue_USD", type number}, {"Actual_Revenue_USD", type number}, {"Planned_Hours", type number}, {"Actual_Hours", type number}, {"Remaining_Hours", type number}, {"Schedule_Performance_Index", type number}, {"Milestone_Total", Int64.Type}, {"Milestones_Achieved", Int64.Type}, {"Milestone_Completion_Pct", type number}, {"Risk_Score", Int64.Type}, {"Risk_Category", type text}, {"Network_Activity", type text}, {"Currency", type text}, {"Fiscal_Year", Int64.Type}, {"Fiscal_Period", Int64.Type}, {"Last_Updated_By", type text}, {"Last_Updated_Date", type date}, {"Data_Source", type text}, {"Extract_Timestamp", type datetime}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

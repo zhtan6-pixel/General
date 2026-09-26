@@ -1,0 +1,35 @@
+relationship 2a096f18-9bd2-42eb-b24c-2bbbb48fdb6d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Project_Start_Date
+	toColumn: LocalDateTable_64a5e35d-ffa4-4a9a-a1db-d0d7878bb44a.Date
+
+relationship a7d771cb-cfbf-4421-9bd8-0c0f612dcbae
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Project_End_Date
+	toColumn: LocalDateTable_e5cc9025-1d21-4b3b-b552-22191f4e9119.Date
+
+relationship 522e5df0-d456-4d75-8d08-7b9e8c4f448b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.WBS_Start_Date
+	toColumn: LocalDateTable_7d932117-ccd5-4704-95e7-b3c337b6c363.Date
+
+relationship 043e5434-89e1-466f-8ab2-1e0f7edfdb52
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.WBS_End_Date
+	toColumn: LocalDateTable_ded5baad-689a-4abc-861f-782ddd422d0c.Date
+
+relationship 6b14dbd3-79b8-488e-9423-81c032dba76a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Baseline_End_Date
+	toColumn: LocalDateTable_13b2326e-8358-4550-9f9e-57f7e8feda3a.Date
+
+relationship 90a64aa0-c0be-435d-8810-76e516dca0b7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Last_Updated_Date
+	toColumn: LocalDateTable_312b5f2f-ce3e-4105-b7b6-01972146cb6e.Date
+
+relationship 176afdd8-dc32-4c8f-a60f-f3f165128bb5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Extract_Timestamp
+	toColumn: LocalDateTable_07b7815e-db24-4257-a60b-bc0ec05c47b1.Date
+

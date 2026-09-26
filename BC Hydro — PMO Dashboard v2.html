@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BC Hydro — PMO Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root{
+  --bg:#f1f5f9;
+  --surface:#ffffff;
+  --surface2:#f8fafc;
+  --surface3:#eef2f7;
+  --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --navy:#0f2044;
+  --navy2:#1e3a5f;
+  --text:#0f172a;
+  --muted:#475569;
+  --faint:#94a3b8;
+  --accent:#2563eb;
+  --accent-soft:#eff6ff;
+  --green:#15803d;
+  --green-soft:#f0fdf4;
+  --amber:#b45309;
+  --amber-soft:#fffbeb;
+  --red:#dc2626;
+  --red-soft:#fef2f2;
+  --purple:#7c3aed;
+  --purple-soft:#f5f3ff;
+  --teal:#0f766e;
+  --teal-soft:#f0fdfa;
+  --mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5}
+
+/* ─── LAYOUT ─────────────────────────────────────────────── */
+.app{display:grid;grid-template-rows:54px 42px 1fr;grid-template-columns:228px 1fr;height:100vh}
+
+/* ─── TOPBAR ─────────────────────────────────────────────── */
+.topbar{
+  grid-column:1/-1;
+  background:var(--navy);
+  display:flex;align-items:center;gap:14px;padding:0 20px;
+  box-shadow:0 1px 0 rgba(255,255,255,.06);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.brand-name{font-size:13px;font-weight:700;color:#fff}
+.brand-sub{font-size:10px;color:#64748b;font-weight:400}
+.topbar-sep{width:1px;height:24px;background:#1e3a5f}
+.topbar-title{font-size:12px;color:#94a3b8;font-weight:500}
+.spacer{flex:1}
+.status-chip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);border:1px solid}
+.sc-green{color:#4ade80;border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.07)}
+.sc-amber{color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.07)}
+.sc-blue{color:#93c5fd;border-color:rgba(147,197,253,.3);background:rgba(147,197,253,.07)}
+.topbar-date{font-size:10px;color:#475569;font-family:var(--mono)}
+
+/* ─── TABBAR ─────────────────────────────────────────────── */
+.tabbar{
+  grid-column:1/-1;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:stretch;
+  padding:0 0 0 228px;
+  overflow-x:auto;
+}
+.tab{
+  display:flex;align-items:center;gap:7px;
+  padding:0 18px;
+  font-size:11px;font-weight:500;color:var(--muted);
+  cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .15s;user-select:none;
+}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;background:var(--accent-soft)}
+.tab-num{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:var(--surface3);color:var(--faint);font-family:var(--mono)}
+.tab.active .tab-num{background:rgba(37,99,235,.15);color:var(--accent)}
+
+/* ─── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-header{background:var(--navy);padding:14px 16px;flex-shrink:0}
+.sb-header-title{font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.sb-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sb-kpi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px}
+.sb-kpi-label{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.sb-kpi-val{font-size:17px;font-weight:700;font-family:var(--mono);line-height:1}
+.sb-kpi-sub{font-size:9px;margin-top:3px}
+.sb-body{padding:14px 16px;flex:1}
+.slicer-section{margin-bottom:18px}
+.slicer-section-title{font-size:10px;font-weight:700;color:var(--text);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.slicer-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.slicer-pill{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:5px;cursor:pointer;font-size:11px;color:var(--muted);margin-bottom:2px;transition:all .12s}
+.slicer-pill:hover{background:var(--surface3);color:var(--text)}
+.slicer-pill.on{background:var(--accent-soft);color:var(--accent)}
+.scheck{width:13px;height:13px;border-radius:3px;border:1px solid var(--border2);flex-shrink:0;display:grid;place-items:center;font-size:8px;color:transparent;transition:all .12s}
+.slicer-pill.on .scheck{background:var(--accent);border-color:var(--accent);color:#fff}
+.scount{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint)}
+.slicer-pill.on .scount{color:var(--accent)}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ─── CANVAS ─────────────────────────────────────────────── */
+.canvas{overflow-y:auto;padding:18px;background:var(--bg)}
+.view{display:none;flex-direction:column;gap:14px}
+.view.active{display:flex}
+
+/* ─── GRID HELPERS ─────────────────────────────────────────── */
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:11px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g2-6040{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.g2-4060{display:grid;grid-template-columns:1fr 1.5fr;gap:14px}
+.g2-7030{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.col-span-2{grid-column:span 2}
+
+/* ─── KPI CARD ─────────────────────────────────────────────── */
+.kpi{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:15px 16px;position:relative;overflow:hidden;
+}
+.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.kpi-icon{position:absolute;top:14px;right:14px;font-size:18px;opacity:.18}
+.kpi-label{font-size:10px;color:var(--faint);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
+.kpi-val{font-size:26px;font-weight:800;line-height:1;letter-spacing:-1px;font-family:var(--mono)}
+.kpi-footer{display:flex;align-items:center;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.chip-g{background:var(--green-soft);color:var(--green)}
+.chip-r{background:var(--red-soft);color:var(--red)}
+.chip-a{background:var(--amber-soft);color:var(--amber)}
+.chip-b{background:var(--accent-soft);color:var(--accent)}
+.chip-p{background:var(--purple-soft);color:var(--purple)}
+.chip-t{background:var(--teal-soft);color:var(--teal)}
+.kpi-sub{font-size:10px;color:var(--faint)}
+
+/* ─── PANEL ─────────────────────────────────────────────── */
+.panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.panel-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.3}
+.panel-sub{font-size:10px;color:var(--faint);margin-top:2px}
+.panel-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--surface3);color:var(--muted);white-space:nowrap;flex-shrink:0}
+
+/* ─── H-BARS ─────────────────────────────────────────────── */
+.hbar-list{display:flex;flex-direction:column;gap:9px}
+.hbar-item{display:flex;flex-direction:column;gap:3px}
+.hbar-row{display:flex;justify-content:space-between;align-items:center}
+.hbar-name{font-size:11px;color:var(--muted);font-weight:500}
+.hbar-val{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.track{height:6px;background:var(--surface3);border-radius:3px;position:relative;overflow:hidden}
+.fill{height:100%;border-radius:3px;transition:width .3s ease}
+
+/* ─── TABLE ─────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl thead tr{background:var(--surface2)}
+.tbl th{font-size:9px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
+.tbl td{font-size:11px;padding:7px 10px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:middle;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--surface2);color:var(--text)}
+.tbl .bold{font-weight:600;color:var(--text)}
+.tbl .mono{font-family:var(--mono);font-size:11px}
+.pos{color:var(--red);font-family:var(--mono);font-size:11px;font-weight:600}
+.neg{color:var(--green);font-family:var(--mono);font-size:11px;font-weight:600}
+.neutral{color:var(--faint);font-family:var(--mono);font-size:11px}
+
+/* ─── PROGRESS ─────────────────────────────────────────── */
+.pb{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;min-width:44px}
+.pf{height:100%;border-radius:2px}
+
+/* ─── LEGEND ─────────────────────────────────────────────── */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.ld{width:12px;height:4px;border-radius:2px;flex-shrink:0}
+.lc{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ─── RISK BAND ─────────────────────────────────────────── */
+.risk-band{border-radius:5px;padding:3px 9px;font-size:10px;font-weight:700;text-align:center;font-family:var(--mono)}
+.rb-high{background:#fef2f2;color:#dc2626}
+.rb-med{background:#fffbeb;color:#b45309}
+.rb-low{background:#f0fdf4;color:#15803d}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ─── SECTION LABEL ─────────────────────────────────────── */
+.sec-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 2px}
+
+/* ─── INFO ALERT ─────────────────────────────────────────── */
+.alert{border-radius:8px;padding:12px 14px;border-left:3px solid;margin-top:4px}
+.alert-r{background:var(--red-soft);border-color:var(--red)}
+.alert-a{background:var(--amber-soft);border-color:var(--amber)}
+.alert-g{background:var(--green-soft);border-color:var(--green)}
+.alert-title{font-size:11px;font-weight:700;margin-bottom:3px}
+.alert-body{font-size:10px;color:var(--muted)}
+
+/* ─── DATA QUALITY CARD ───────────────────────────────────── */
+.dq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dq-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.dq-val{font-size:22px;font-weight:800;font-family:var(--mono);margin-bottom:3px}
+.dq-label{font-size:10px;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TOPBAR                                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">BC</div>
+    <div><div class="brand-name">BC Hydro</div><div class="brand-sub">PMO Portfolio Dashboard</div></div>
+  </div>
+  <div class="topbar-sep"></div>
+  <span class="topbar-title" id="topbarTitle">P1 · Executive Overview</span>
+  <div class="spacer"></div>
+  <div class="status-chip sc-green">● CPI 1.004</div>
+  <div class="status-chip sc-amber">● SPI 0.952</div>
+  <div class="status-chip sc-blue">VAC +$39.5M</div>
+  <div class="topbar-sep"></div>
+  <span class="topbar-date">Sep 24, 2026</span>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB BAR                                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<nav class="tabbar">
+  <div class="tab active" onclick="go('exec',this,'P1 · Executive Overview')">
+    <span>⊞</span> Executive Overview <span class="tab-num">P1</span>
+  </div>
+  <div class="tab" onclick="go('cost',this,'P2 · Cost Performance')">
+    <span>$</span> Cost Performance <span class="tab-num">P2</span>
+  </div>
+  <div class="tab" onclick="go('schedule',this,'P3 · Schedule & Delivery')">
+    <span>⏱</span> Schedule &amp; Delivery <span class="tab-num">P3</span>
+  </div>
+  <div class="tab" onclick="go('risk',this,'P4 · Risk & Health')">
+    <span>⚠</span> Risk &amp; Health <span class="tab-num">P4</span>
+  </div>
+  <div class="tab" onclick="go('portfolio',this,'P5 · Detailed Portfolio')">
+    <span>≡</span> Detailed Portfolio <span class="tab-num">P5</span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR                                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sb-header">
+    <div class="sb-header-title">Portfolio KPIs</div>
+    <div class="sb-kpi-grid">
+      <div class="sb-kpi">
+        <div class="sb-kpi-label">CPI</div>
+        <div class="sb-kpi-val" style="color:#4ade80">1.004</div>
+        <div class="sb-kpi-sub" style="color:#4ade80">✓ Under budget</div>
+      </div>
+      <div class="sb-kpi">
+        <div class="sb-kpi-label">SPI</div>
+        <div class="sb-kpi-val" style="color:#fbbf24">0.952</div>
+        <div class="sb-kpi-sub" style="color:#fbbf24">⚠ Behind plan</div>
+      </div>
+      <div class="sb-kpi">
+        <div class="sb-kpi-label">BAC</div>
+        <div class="sb-kpi-val" style="color:#93c5fd">$729M</div>
+        <div class="sb-kpi-sub" style="color:#64748b">Approved</div>
+      </div>
+      <div class="sb-kpi">
+        <div class="sb-kpi-label">EAC</div>
+        <div class="sb-kpi-val" style="color:#f87171">$769M</div>
+        <div class="sb-kpi-sub" style="color:#f87171">+$39.5M VAC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-body">
+    <!-- SLICER 1: Region -->
+    <div class="slicer-section">
+      <div class="slicer-section-title">Region</div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#2563eb"></div>Vancouver Island<span class="scount">66</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#15803d"></div>South<span class="scount">64</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#7c3aed"></div>Lower Mainland<span class="scount">61</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#b45309"></div>Interior<span class="scount">55</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#dc2626"></div>North<span class="scount">54</span></div>
+    </div>
+
+    <!-- SLICER 2: Status -->
+    <div class="slicer-section">
+      <div class="slicer-section-title">Status</div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#2563eb"></div>In Progress<span class="scount">167</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#7c3aed"></div>Planning<span class="scount">49</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div><div class="sdot" style="background:#15803d"></div>Completed<span class="scount">67</span></div>
+      <div class="slicer-pill"><div class="scheck">✓</div><div class="sdot" style="background:#94a3b8"></div>On Hold<span class="scount">17</span></div>
+    </div>
+
+    <!-- SLICER 3: Department -->
+    <div class="slicer-section">
+      <div class="slicer-section-title">Department</div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>Distribution<span class="scount">41</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>IT &amp; Digital<span class="scount">41</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>Finance<span class="scount">34</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>Customer Service<span class="scount">33</span></div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>Generation<span class="scount">29</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>Capital Projects<span class="scount">28</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>Asset Management<span class="scount">27</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>Transmission<span class="scount">26</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>Safety &amp; Comp.<span class="scount">21</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>Operations<span class="scount">20</span></div>
+    </div>
+
+    <!-- SLICER 4: Date Range -->
+    <div class="slicer-section">
+      <div class="slicer-section-title">Date Range</div>
+      <div class="slicer-pill on"><div class="scheck">✓</div>Jan 2024 – Sep 2026<span class="scount">36mo</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>2024 Only<span class="scount">12mo</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>2025 Only<span class="scount">12mo</span></div>
+      <div class="slicer-pill"><div class="scheck"></div>2026 YTD<span class="scount">9mo</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANVAS                                                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<main class="canvas">
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- P1: EXECUTIVE OVERVIEW                                       -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="view active" id="view-exec">
+
+  <!-- 6 KPI CARDS -->
+  <div class="g6">
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#2563eb"></div>
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-label">Total Projects</div>
+      <div class="kpi-val" style="color:#2563eb">300</div>
+      <div class="kpi-footer"><span class="chip chip-b">167 active</span><span class="kpi-sub">49 planning</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#15803d"></div>
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">CPI — Cost Index</div>
+      <div class="kpi-val" style="color:#15803d">1.004</div>
+      <div class="kpi-footer"><span class="chip chip-g">✓ Under budget</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#b45309"></div>
+      <div class="kpi-icon">⏱</div>
+      <div class="kpi-label">SPI — Schedule Index</div>
+      <div class="kpi-val" style="color:#b45309">0.952</div>
+      <div class="kpi-footer"><span class="chip chip-a">⚠ Behind plan</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#2563eb"></div>
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Budget (BAC)</div>
+      <div class="kpi-val" style="color:#0f172a">$729M</div>
+      <div class="kpi-footer"><span class="chip chip-b">Approved baseline</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#dc2626"></div>
+      <div class="kpi-icon">🔮</div>
+      <div class="kpi-label">Forecast (EAC)</div>
+      <div class="kpi-val" style="color:#dc2626">$769M</div>
+      <div class="kpi-footer"><span class="chip chip-r">VAC +$39.5M</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#0f766e"></div>
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-label">Avg Completion</div>
+      <div class="kpi-val" style="color:#0f766e">47.9%</div>
+      <div class="kpi-footer"><span class="chip chip-t">EV-weighted</span></div>
+    </div>
+  </div>
+
+  <!-- 2 CHARTS -->
+  <div class="g2">
+
+    <!-- CHART 1: EV / PV / AC Trend -->
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">Earned Value Performance — EV vs PV vs AC</div><div class="panel-sub">Portfolio cumulative · Jan 2024 – Sep 2026</div></div>
+        <div class="panel-badge">Chart 1 of 2</div>
+      </div>
+      <svg viewBox="0 0 540 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="g-ev" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2563eb" stop-opacity=".18"/>
+            <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid -->
+        <line x1="46" y1="14" x2="532" y2="14" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="46" y1="52" x2="532" y2="52" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="46" y1="90" x2="532" y2="90" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="46" y1="128" x2="532" y2="128" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="42" y="17" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$450M</text>
+        <text x="42" y="55" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$380M</text>
+        <text x="42" y="93" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$310M</text>
+        <text x="42" y="131" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$240M</text>
+        <!-- PV: ~$365M at end → normalize 200-460=260 range → px=115. y=128-(165/260)*114=128-72=56 flat -->
+        <line x1="46" y1="56" x2="532" y2="56" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" opacity=".7"/>
+        <!-- EV ramp from 0 to 347M: y=128-(147/260)*114=128-64.5=63.5 final -->
+        <path d="M46,128 L92,118 L138,109 L184,101 L230,94 L276,87 L322,80 L368,75 L414,71 L460,68 L506,65 L532,64" fill="url(#g-ev)" stroke="none"/>
+        <path d="M46,128 L92,118 L138,109 L184,101 L230,94 L276,87 L322,80 L368,75 L414,71 L460,68 L506,65 L532,64" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+        <!-- AC similar to EV, tiny variation -->
+        <path d="M46,128 L92,119 L138,110 L184,102 L230,95 L276,88 L322,81 L368,76 L414,72 L460,69 L506,66 L532,65" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- X labels -->
+        <text x="46" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Jan 24</text>
+        <text x="184" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">May 24</text>
+        <text x="322" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Nov 24</text>
+        <text x="414" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Apr 25</text>
+        <text x="532" y="148" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Sep 26</text>
+        <!-- Legend -->
+        <rect x="46" y="160" width="10" height="3" fill="#2563eb" rx="1"/>
+        <text x="60" y="163" fill="#475569" font-size="8" font-family="Inter">EV – Earned Value ($347M)</text>
+        <line x1="195" y1="162" x2="205" y2="162" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="209" y="163" fill="#475569" font-size="8" font-family="Inter">AC – Actual Cost ($346M)</text>
+        <line x1="335" y1="162" x2="345" y2="162" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" opacity=".7"/>
+        <text x="349" y="163" fill="#475569" font-size="8" font-family="Inter">PV – Planned Value ($365M)</text>
+      </svg>
+    </div>
+
+    <!-- CHART 2: CPI & SPI by Region grouped bar -->
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">CPI &amp; SPI by Region</div><div class="panel-sub">Earned value indices · 1.0 = on target</div></div>
+        <div class="panel-badge">Chart 2 of 2</div>
+      </div>
+      <svg viewBox="0 0 380 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <!-- baseline at 1.0 -->
+        <!-- scale: y axis 0.8 to 1.15. range=0.35, height=120px, y_base=140 -->
+        <!-- y(val)=140-(val-0.80)/0.35*120 -->
+        <!-- baseline 1.0 → y=140-(0.20/0.35)*120=140-68.6=71.4 -->
+        <line x1="40" y1="14" x2="360" y2="14" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="40" y1="71" x2="360" y2="71" stroke="#2563eb" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+        <line x1="40" y1="140" x2="360" y2="140" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="36" y="17" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">1.15</text>
+        <text x="36" y="74" text-anchor="end" fill="#2563eb" font-size="8" font-family="Inter">1.00</text>
+        <text x="36" y="143" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">0.80</text>
+
+        <!-- Van Island: CPI=1.005 y=140-(0.205/0.35)*120=70.4  SPI=1.052 y=140-(0.252/0.35)*120=53.5 -->
+        <rect x="50" y="70" width="14" height="70" fill="#2563eb" rx="2" opacity=".85"/>
+        <rect x="65" y="54" width="14" height="86" fill="#15803d" rx="2" opacity=".75"/>
+        <text x="62" y="157" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Van. Is.</text>
+        <text x="57" y="67" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">1.005</text>
+        <text x="72" y="50" text-anchor="middle" fill="#15803d" font-size="7" font-family="Inter">1.052</text>
+
+        <!-- South: CPI=0.997 y=140-(0.197/0.35)*120=72.5  SPI=0.905 y=140-(0.105/0.35)*120=104 -->
+        <rect x="110" y="73" width="14" height="67" fill="#2563eb" rx="2" opacity=".85"/>
+        <rect x="125" y="104" width="14" height="36" fill="#b45309" rx="2" opacity=".8"/>
+        <text x="122" y="157" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">South</text>
+        <text x="117" y="69" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">0.997</text>
+        <text x="132" y="100" text-anchor="middle" fill="#b45309" font-size="7" font-family="Inter">0.905</text>
+
+        <!-- LM: CPI=1.000 y=71  SPI=0.924 y=140-(0.124/0.35)*120=97.5 -->
+        <rect x="170" y="71" width="14" height="69" fill="#2563eb" rx="2" opacity=".85"/>
+        <rect x="185" y="97" width="14" height="43" fill="#b45309" rx="2" opacity=".8"/>
+        <text x="182" y="157" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">L. ML.</text>
+        <text x="177" y="67" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">1.000</text>
+        <text x="192" y="93" text-anchor="middle" fill="#b45309" font-size="7" font-family="Inter">0.924</text>
+
+        <!-- Interior: CPI=1.011 y=67  SPI=0.969 y=140-(0.169/0.35)*120=82 -->
+        <rect x="230" y="67" width="14" height="73" fill="#2563eb" rx="2" opacity=".85"/>
+        <rect x="245" y="82" width="14" height="58" fill="#b45309" rx="2" opacity=".7"/>
+        <text x="242" y="157" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Interior</text>
+        <text x="237" y="63" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">1.011</text>
+        <text x="252" y="78" text-anchor="middle" fill="#b45309" font-size="7" font-family="Inter">0.969</text>
+
+        <!-- North: CPI=1.009 y=68  SPI=0.909 y=140-(0.109/0.35)*120=102.6 -->
+        <rect x="290" y="68" width="14" height="72" fill="#2563eb" rx="2" opacity=".85"/>
+        <rect x="305" y="103" width="14" height="37" fill="#b45309" rx="2" opacity=".8"/>
+        <text x="302" y="157" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">North</text>
+        <text x="297" y="64" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">1.009</text>
+        <text x="312" y="99" text-anchor="middle" fill="#b45309" font-size="7" font-family="Inter">0.909</text>
+
+        <!-- Legend -->
+        <rect x="40" y="167" width="10" height="5" fill="#2563eb" rx="1" opacity=".85"/>
+        <text x="54" y="172" fill="#475569" font-size="8" font-family="Inter">CPI (Cost Performance)</text>
+        <rect x="185" y="167" width="10" height="5" fill="#15803d" rx="1" opacity=".75"/>
+        <text x="199" y="172" fill="#475569" font-size="8" font-family="Inter">SPI ≥1.0</text>
+        <rect x="240" y="167" width="10" height="5" fill="#b45309" rx="1" opacity=".8"/>
+        <text x="254" y="172" fill="#475569" font-size="8" font-family="Inter">SPI &lt;1.0</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- MATRIX: Dept × Status with EV Metrics -->
+  <div class="panel">
+    <div class="panel-header">
+      <div><div class="panel-title">Portfolio Matrix — Department × Status with Earned Value Metrics</div><div class="panel-sub">CPI · SPI · CV · Forecast · Completion per department</div></div>
+      <div class="panel-badge">300 Projects</div>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Total</th>
+          <th>🔵 In Progress</th>
+          <th>🟣 Planning</th>
+          <th>🟢 Completed</th>
+          <th>⏸ On Hold</th>
+          <th>CPI</th>
+          <th>SPI</th>
+          <th>Budget</th>
+          <th>Actual</th>
+          <th>Forecast</th>
+          <th>CV</th>
+          <th>Avg %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="bold">Distribution</td><td class="mono">41</td><td><span class="chip chip-b">24</span></td><td><span class="chip chip-p">9</span></td><td><span class="chip chip-g">7</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#15803d;font-weight:700">1.012</td><td class="mono" style="color:#b45309">0.919</td><td class="mono">$106.1M</td><td class="mono">$48.2M</td><td class="mono">$111.8M</td><td class="neg">+$0.6M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:48%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">48%</span></div></td></tr>
+        <tr><td class="bold">IT &amp; Digital</td><td class="mono">41</td><td><span class="chip chip-b">22</span></td><td><span class="chip chip-p">8</span></td><td><span class="chip chip-g">9</span></td><td style="color:var(--faint);font-family:var(--mono)">2</td><td class="mono" style="color:#15803d;font-weight:700">1.047</td><td class="mono" style="color:#b45309">0.928</td><td class="mono">$94.5M</td><td class="mono">$41.9M</td><td class="mono">$100.0M</td><td class="neg">+$2.0M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:46%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">46%</span></div></td></tr>
+        <tr><td class="bold">Customer Service</td><td class="mono">33</td><td><span class="chip chip-b">18</span></td><td><span class="chip chip-p">7</span></td><td><span class="chip chip-g">7</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#b45309">0.978</td><td class="mono" style="color:#dc2626;font-weight:700">0.870</td><td class="mono">$86.9M</td><td class="mono">$38.7M</td><td class="mono">$91.1M</td><td class="pos">−$0.9M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:44%;background:#b45309"></div></div><span style="font-family:var(--mono);font-size:10px">44%</span></div></td></tr>
+        <tr><td class="bold">Finance</td><td class="mono">34</td><td><span class="chip chip-b">19</span></td><td><span class="chip chip-p">6</span></td><td><span class="chip chip-g">8</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#b45309">0.989</td><td class="mono" style="color:#dc2626;font-weight:700">0.802</td><td class="mono">$73.4M</td><td class="mono">$29.8M</td><td class="mono">$77.1M</td><td class="pos">−$0.3M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:40%;background:#dc2626"></div></div><span style="font-family:var(--mono);font-size:10px">40%</span></div></td></tr>
+        <tr><td class="bold">Asset Management</td><td class="mono">27</td><td><span class="chip chip-b">15</span></td><td><span class="chip chip-p">4</span></td><td><span class="chip chip-g">6</span></td><td style="color:var(--faint);font-family:var(--mono)">2</td><td class="mono" style="color:#15803d;font-weight:700">1.039</td><td class="mono" style="color:#b45309">0.932</td><td class="mono">$68.8M</td><td class="mono">$30.9M</td><td class="mono">$72.0M</td><td class="neg">+$1.2M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:46%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">46%</span></div></td></tr>
+        <tr><td class="bold">Transmission</td><td class="mono">26</td><td><span class="chip chip-b">14</span></td><td><span class="chip chip-p">5</span></td><td><span class="chip chip-g">6</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#15803d">1.005</td><td class="mono" style="color:#15803d;font-weight:700">1.023</td><td class="mono">$65.9M</td><td class="mono">$33.5M</td><td class="mono">$69.2M</td><td class="neg">+$0.2M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:53%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">53%</span></div></td></tr>
+        <tr><td class="bold">Capital Projects</td><td class="mono">28</td><td><span class="chip chip-b">16</span></td><td><span class="chip chip-p">5</span></td><td><span class="chip chip-g">6</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#b45309">0.990</td><td class="mono" style="color:#15803d;font-weight:700">1.103</td><td class="mono">$63.5M</td><td class="mono">$35.4M</td><td class="mono">$67.7M</td><td class="pos">−$0.4M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:57%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">57%</span></div></td></tr>
+        <tr><td class="bold">Generation</td><td class="mono">29</td><td><span class="chip chip-b">16</span></td><td><span class="chip chip-p">5</span></td><td><span class="chip chip-g">6</span></td><td style="color:var(--faint);font-family:var(--mono)">2</td><td class="mono" style="color:#b45309">0.995</td><td class="mono" style="color:#b45309">0.994</td><td class="mono">$61.5M</td><td class="mono">$30.7M</td><td class="mono">$65.5M</td><td class="pos">−$0.1M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:50%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">50%</span></div></td></tr>
+        <tr><td class="bold">Safety &amp; Compliance</td><td class="mono">21</td><td><span class="chip chip-b">11</span></td><td><span class="chip chip-p">4</span></td><td><span class="chip chip-g">5</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#b45309">0.973</td><td class="mono" style="color:#15803d">1.039</td><td class="mono">$60.3M</td><td class="mono">$32.2M</td><td class="mono">$64.1M</td><td class="pos">−$0.9M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:55%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">55%</span></div></td></tr>
+        <tr><td class="bold">Operations</td><td class="mono">20</td><td><span class="chip chip-b">12</span></td><td><span class="chip chip-p">3</span></td><td><span class="chip chip-g">4</span></td><td style="color:var(--faint);font-family:var(--mono)">1</td><td class="mono" style="color:#15803d">1.002</td><td class="mono" style="color:#15803d">1.021</td><td class="mono">$48.5M</td><td class="mono">$24.7M</td><td class="mono">$50.5M</td><td class="neutral">$0.0M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:52%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">52%</span></div></td></tr>
+        <tr style="background:#eff6ff"><td class="bold" style="color:#2563eb">Portfolio Total</td><td class="mono" style="font-weight:700">300</td><td><span class="chip chip-b">167</span></td><td><span class="chip chip-p">49</span></td><td><span class="chip chip-g">67</span></td><td style="color:var(--faint);font-family:var(--mono);font-weight:700">17</td><td class="mono" style="color:#15803d;font-weight:800">1.004</td><td class="mono" style="color:#b45309;font-weight:800">0.952</td><td class="mono" style="font-weight:700">$729.4M</td><td class="mono" style="font-weight:700">$346.0M</td><td class="mono" style="font-weight:700">$768.9M</td><td class="neg" style="font-weight:700">+$1.4M</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:44px"><div class="pf" style="width:47.9%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px;font-weight:700">47.9%</span></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- P2: COST PERFORMANCE                                         -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="view" id="view-cost">
+  <div class="g4">
+    <div class="kpi"><div class="kpi-accent" style="background:#15803d"></div><div class="kpi-label">Portfolio CPI</div><div class="kpi-val" style="color:#15803d">1.004</div><div class="kpi-footer"><span class="chip chip-g">EV $347M · AC $346M</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#15803d"></div><div class="kpi-label">Cost Variance (CV)</div><div class="kpi-val" style="color:#15803d">+$1.4M</div><div class="kpi-footer"><span class="chip chip-g">EV minus AC · favourable</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#dc2626"></div><div class="kpi-label">Forecast EAC</div><div class="kpi-val" style="color:#dc2626">$769M</div><div class="kpi-footer"><span class="chip chip-r">VAC +$39.5M over BAC</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#b45309"></div><div class="kpi-label">Projects CPI &lt; 1.0</div><div class="kpi-val" style="color:#b45309">156</div><div class="kpi-footer"><span class="chip chip-a">52% of portfolio</span></div></div>
+  </div>
+
+  <div class="g2">
+    <!-- Budget vs Actual Cost (by project type) -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Budget vs Actual Cost — by Project Type</div><div class="panel-sub">BAC (budget), AC (actual), EAC (forecast)</div></div></div>
+      <div class="hbar-list">
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">SAP Enhancement</span><span class="hbar-val">$57.3M / $107.0M · EAC $109.6M</span></div><div class="track"><div class="fill" style="width:100%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:53.6%;background:#2563eb;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Grid Reliability</span><span class="hbar-val">$38.4M / $91.8M · EAC $98.3M</span></div><div class="track"><div class="fill" style="width:85.8%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:35.9%;background:#2563eb;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Transmission Line Exp.</span><span class="hbar-val">$45.1M / $86.3M · EAC $92.6M</span></div><div class="track"><div class="fill" style="width:80.7%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:42.2%;background:#7c3aed;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Substation Upgrade</span><span class="hbar-val">$33.1M / $86.0M · EAC $91.9M</span></div><div class="track"><div class="fill" style="width:80.4%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:30.9%;background:#0f766e;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">EV Infrastructure</span><span class="hbar-val">$39.7M / $78.9M · EAC $81.2M</span></div><div class="track"><div class="fill" style="width:73.7%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:37.1%;background:#15803d;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Asset Replacement</span><span class="hbar-val">$27.4M / $69.9M · EAC $73.1M</span></div><div class="track"><div class="fill" style="width:65.4%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:25.6%;background:#b45309;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Smart Meter Program</span><span class="hbar-val">$30.7M / $59.3M · EAC $63.2M</span></div><div class="track"><div class="fill" style="width:55.5%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:28.7%;background:#15803d;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Cybersecurity</span><span class="hbar-val">$26.3M / $60.3M · EAC $64.7M</span></div><div class="track"><div class="fill" style="width:56.4%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:24.6%;background:#dc2626;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Vegetation Management</span><span class="hbar-val">$27.8M / $49.0M · EAC $52.2M</span></div><div class="track"><div class="fill" style="width:45.8%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:26.0%;background:#7c3aed;border-radius:3px"></div></div></div>
+        <div class="hbar-item"><div class="hbar-row"><span class="hbar-name">Dam Modernization</span><span class="hbar-val">$20.5M / $41.0M · EAC $42.1M</span></div><div class="track"><div class="fill" style="width:38.4%;background:#e2e8f0"></div><div style="position:absolute;top:0;left:0;height:100%;width:19.2%;background:#0f766e;border-radius:3px"></div></div></div>
+      </div>
+      <div class="legend">
+        <div class="li"><div class="ld" style="background:#e2e8f0"></div>Budget (BAC)</div>
+        <div class="li"><div class="ld" style="background:#2563eb"></div>Actual Cost (AC)</div>
+      </div>
+    </div>
+
+    <!-- Forecast vs Actual + CPI Chart -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- Forecast vs Actual -->
+      <div class="panel">
+        <div class="panel-header"><div><div class="panel-title">Forecast vs Actual — Portfolio</div><div class="panel-sub">EAC trajectory vs AC spend · $M</div></div></div>
+        <svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+          <defs>
+            <linearGradient id="g-fc" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#dc2626" stop-opacity=".12"/>
+              <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="36" y1="12" x2="312" y2="12" stroke="#e2e8f0" stroke-width="1"/>
+          <line x1="36" y1="50" x2="312" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+          <line x1="36" y1="88" x2="312" y2="88" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="32" y="15" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$800M</text>
+          <text x="32" y="53" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$700M</text>
+          <text x="32" y="91" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">$600M</text>
+          <!-- BAC flat at 729 → scale 600-800=200, h=76. y=88-(129/200)*76=88-49=39 -->
+          <line x1="36" y1="39" x2="312" y2="39" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="5,3" opacity=".6"/>
+          <text x="316" y="42" fill="#2563eb" font-size="7" font-family="Inter">BAC</text>
+          <!-- EAC ~769 → y=88-(169/200)*76=88-64.2=23.8 -->
+          <path d="M36,88 L72,72 L108,60 L144,50 L180,44 L216,38 L252,34 L288,29 L312,25" fill="url(#g-fc)" stroke="none"/>
+          <path d="M36,88 L72,72 L108,60 L144,50 L180,44 L216,38 L252,34 L288,29 L312,25" fill="none" stroke="#dc2626" stroke-width="2"/>
+          <!-- AC actual -->
+          <path d="M36,88 L72,78 L108,69 L144,61 L180,55 L216,51 L252,47 L288,44 L312,43" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="36" y="110" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Jan 24</text>
+          <text x="180" y="110" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Jan 25</text>
+          <text x="312" y="110" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Sep 26</text>
+          <rect x="36" y="120" width="8" height="3" fill="#dc2626" rx="1"/>
+          <text x="48" y="123" fill="#475569" font-size="7.5" font-family="Inter">EAC Forecast</text>
+          <rect x="120" y="120" width="8" height="3" fill="#2563eb" rx="1"/>
+          <text x="132" y="123" fill="#475569" font-size="7.5" font-family="Inter">Actual Cost</text>
+          <line x1="196" y1="122" x2="206" y2="122" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,2" opacity=".6"/>
+          <text x="210" y="123" fill="#475569" font-size="7.5" font-family="Inter">BAC $729M</text>
+        </svg>
+      </div>
+
+      <!-- CPI chart by dept -->
+      <div class="panel">
+        <div class="panel-header"><div><div class="panel-title">CPI by Department</div><div class="panel-sub">1.0 = on budget · right = better</div></div></div>
+        <svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+          <!-- CPI diverging from 1.0. scale 0.85 to 1.10, x axis -->
+          <!-- x(val) = 40 + (val-0.85)/0.25 * 240. baseline: x=40+(0.15/0.25)*240=40+144=184 -->
+          <line x1="184" y1="5" x2="184" y2="128" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3" opacity=".5"/>
+          <text x="184" y="4" text-anchor="middle" fill="#2563eb" font-size="7" font-family="Inter">1.00</text>
+          <text x="40" y="136" fill="#94a3b8" font-size="7" font-family="Inter">0.85</text>
+          <text x="270" y="136" fill="#94a3b8" font-size="7" font-family="Inter">1.10</text>
+          <!-- bars: y at 13px each from top -->
+          <!-- IT: 1.047→x=184+(0.047/0.25)*240=229, bar 184→229 -->
+          <rect x="184" y="7" width="45" height="10" fill="#15803d" rx="2"/><text x="180" y="16" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">IT &amp; Digital</text><text x="232" y="16" fill="#15803d" font-size="8" font-family="Inter">1.047</text>
+          <!-- Asset: 1.039→x=184+(0.039/0.25)*240=221 -->
+          <rect x="184" y="20" width="37" height="10" fill="#15803d" rx="2"/><text x="180" y="29" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Asset Mgmt</text><text x="224" y="29" fill="#15803d" font-size="8" font-family="Inter">1.039</text>
+          <!-- Dist: 1.012→x=184+(0.012/0.25)*240=196 -->
+          <rect x="184" y="33" width="12" height="10" fill="#15803d" rx="2"/><text x="180" y="42" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Distribution</text><text x="199" y="42" fill="#15803d" font-size="8" font-family="Inter">1.012</text>
+          <!-- Transmission: 1.005→x=190 -->
+          <rect x="184" y="46" width="5" height="10" fill="#15803d" rx="1"/><text x="180" y="55" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Transmission</text><text x="192" y="55" fill="#15803d" font-size="8" font-family="Inter">1.005</text>
+          <!-- Operations: 1.002 -->
+          <rect x="184" y="59" width="2" height="10" fill="#15803d" rx="1"/><text x="180" y="68" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Operations</text><text x="189" y="68" fill="#15803d" font-size="8" font-family="Inter">1.002</text>
+          <!-- Generation: 0.995→x=184-(0.005/0.25)*240=179.2, bar from 179 to 184 -->
+          <rect x="179" y="72" width="5" height="10" fill="#b45309" rx="1"/><text x="180" y="81" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Generation</text><text x="176" y="81" text-anchor="end" fill="#b45309" font-size="8" font-family="Inter">0.995</text>
+          <!-- Capital: 0.990 -->
+          <rect x="172" y="85" width="12" height="10" fill="#b45309" rx="2"/><text x="180" y="94" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Capital Proj.</text><text x="169" y="94" text-anchor="end" fill="#b45309" font-size="8" font-family="Inter">0.990</text>
+          <!-- Finance: 0.989 -->
+          <rect x="171" y="98" width="13" height="10" fill="#b45309" rx="2"/><text x="180" y="107" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Finance</text><text x="168" y="107" text-anchor="end" fill="#b45309" font-size="8" font-family="Inter">0.989</text>
+          <!-- Customer Svc: 0.978 -->
+          <rect x="159" y="111" width="25" height="10" fill="#dc2626" rx="2"/><text x="180" y="120" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Customer Svc</text><text x="156" y="120" text-anchor="end" fill="#dc2626" font-size="8" font-family="Inter">0.978</text>
+          <!-- Safety: 0.973 -->
+          <rect x="154" y="124" width="30" height="10" fill="#dc2626" rx="2"/><text x="180" y="133" text-anchor="end" fill="#475569" font-size="8" font-family="Inter">Safety &amp; Comp.</text><text x="151" y="133" text-anchor="end" fill="#dc2626" font-size="8" font-family="Inter">0.973</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Variance Table -->
+  <div class="panel">
+    <div class="panel-header"><div><div class="panel-title">Cost Variance Detail Table — Earned Value by Project Type</div><div class="panel-sub">EV = BAC × %Complete · CV = EV − AC · CPI = EV / AC · VAC = EAC − BAC</div></div></div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>Project Type</th><th>n</th><th>BAC</th><th>EV</th><th>AC</th><th>CV</th><th>CPI</th><th>EAC</th><th>VAC</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="bold">SAP Enhancement</td><td class="mono">38</td><td class="mono">$107.0M</td><td class="mono">$58.2M</td><td class="mono">$57.3M</td><td class="neg">+$0.9M</td><td class="mono" style="color:#15803d;font-weight:700">1.016</td><td class="mono">$109.6M</td><td class="pos">+$2.6M</td><td><span class="chip chip-g">On Track</span></td></tr>
+        <tr><td class="bold">Grid Reliability</td><td class="mono">33</td><td class="mono">$91.8M</td><td class="mono">$39.4M</td><td class="mono">$38.4M</td><td class="neg">+$1.0M</td><td class="mono" style="color:#15803d;font-weight:700">1.025</td><td class="mono">$98.3M</td><td class="pos">+$6.5M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Transmission Line Exp.</td><td class="mono">40</td><td class="mono">$86.3M</td><td class="mono">$44.8M</td><td class="mono">$45.1M</td><td class="pos">−$0.3M</td><td class="mono" style="color:#b45309">0.992</td><td class="mono">$92.6M</td><td class="pos">+$6.3M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Substation Upgrade</td><td class="mono">35</td><td class="mono">$86.0M</td><td class="mono">$33.5M</td><td class="mono">$33.1M</td><td class="neg">+$0.4M</td><td class="mono" style="color:#15803d">1.013</td><td class="mono">$91.9M</td><td class="pos">+$5.9M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">EV Infrastructure</td><td class="mono">35</td><td class="mono">$78.9M</td><td class="mono">$39.0M</td><td class="mono">$39.7M</td><td class="pos">−$0.7M</td><td class="mono" style="color:#b45309">0.981</td><td class="mono">$81.2M</td><td class="pos">+$2.3M</td><td><span class="chip chip-g">On Track</span></td></tr>
+        <tr><td class="bold">Asset Replacement</td><td class="mono">31</td><td class="mono">$69.9M</td><td class="mono">$26.9M</td><td class="mono">$27.4M</td><td class="pos">−$0.5M</td><td class="mono" style="color:#b45309">0.982</td><td class="mono">$73.1M</td><td class="pos">+$3.2M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Cybersecurity</td><td class="mono">25</td><td class="mono">$60.3M</td><td class="mono">$26.2M</td><td class="mono">$26.3M</td><td class="pos">−$0.1M</td><td class="mono" style="color:#b45309">0.995</td><td class="mono">$64.7M</td><td class="pos">+$4.3M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Smart Meter Program</td><td class="mono">20</td><td class="mono">$59.3M</td><td class="mono">$31.7M</td><td class="mono">$30.7M</td><td class="neg">+$1.0M</td><td class="mono" style="color:#15803d">1.032</td><td class="mono">$63.2M</td><td class="pos">+$3.9M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Vegetation Mgmt</td><td class="mono">24</td><td class="mono">$49.0M</td><td class="mono">$27.5M</td><td class="mono">$27.8M</td><td class="pos">−$0.3M</td><td class="mono" style="color:#b45309">0.989</td><td class="mono">$52.2M</td><td class="pos">+$3.2M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+        <tr><td class="bold">Dam Modernization</td><td class="mono">19</td><td class="mono">$41.0M</td><td class="mono">$20.6M</td><td class="mono">$20.5M</td><td class="neg">+$0.1M</td><td class="mono" style="color:#15803d">1.006</td><td class="mono">$42.1M</td><td class="pos">+$1.1M</td><td><span class="chip chip-g">On Track</span></td></tr>
+        <tr style="background:#eff6ff"><td class="bold" style="color:#2563eb">Portfolio</td><td class="mono" style="font-weight:700">300</td><td class="mono" style="font-weight:700">$729.4M</td><td class="mono" style="font-weight:700">$347.3M</td><td class="mono" style="font-weight:700">$346.0M</td><td class="neg" style="font-weight:700">+$1.4M</td><td class="mono" style="color:#15803d;font-weight:800">1.004</td><td class="mono" style="font-weight:700">$768.9M</td><td class="pos" style="font-weight:700">+$39.5M</td><td><span class="chip chip-a">Monitor</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- P3: SCHEDULE & DELIVERY                                      -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="view" id="view-schedule">
+  <div class="g4">
+    <div class="kpi"><div class="kpi-accent" style="background:#b45309"></div><div class="kpi-label">Portfolio SPI</div><div class="kpi-val" style="color:#b45309">0.952</div><div class="kpi-footer"><span class="chip chip-a">EV $347M · PV $365M</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#dc2626"></div><div class="kpi-label">Schedule Variance (SV)</div><div class="kpi-val" style="color:#dc2626">−$17.4M</div><div class="kpi-footer"><span class="chip chip-r">EV minus PV · behind</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#dc2626"></div><div class="kpi-label">SPI &lt; 0.8 (Critical)</div><div class="kpi-val" style="color:#dc2626">128</div><div class="kpi-footer"><span class="chip chip-r">42.7% of projects</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#15803d"></div><div class="kpi-label">SPI ≥ 1.0 (On/Ahead)</div><div class="kpi-val" style="color:#15803d">140</div><div class="kpi-footer"><span class="chip chip-g">46.7% of projects</span></div></div>
+  </div>
+
+  <div class="g2">
+    <!-- Milestone Completion -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Milestone Completion Distribution</div><div class="panel-sub">% Complete buckets · 300 active projects</div></div></div>
+      <div style="display:flex;align-items:center;gap:22px">
+        <svg viewBox="0 0 150 150" style="width:140px;height:140px;flex-shrink:0">
+          <!-- r=60, circumference=376.99 -->
+          <!-- 0-25%: 84/300=28% → 105.6 -->
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#f1f5f9" stroke-width="22"/>
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#dc2626" stroke-width="22" stroke-dasharray="105.6 271.4" stroke-dashoffset="94.25" transform="rotate(-90 75 75)"/>
+          <!-- 25-50%: 76=25.3% → 95.4 -->
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#b45309" stroke-width="22" stroke-dasharray="95.4 281.6" stroke-dashoffset="-11.35" transform="rotate(-90 75 75)"/>
+          <!-- 50-75%: 75=25% → 94.25 -->
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#2563eb" stroke-width="22" stroke-dasharray="94.25 282.74" stroke-dashoffset="-106.75" transform="rotate(-90 75 75)"/>
+          <!-- 75-100%: 65=21.7% → 81.7 -->
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#15803d" stroke-width="22" stroke-dasharray="81.7 295.29" stroke-dashoffset="-201" transform="rotate(-90 75 75)"/>
+          <text x="75" y="71" text-anchor="middle" fill="#0f172a" font-size="22" font-weight="800" font-family="JetBrains Mono">300</text>
+          <text x="75" y="84" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter">projects</text>
+        </svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:#dc2626;display:inline-block"></span>0–25% complete</span>
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700">84 <span style="color:var(--faint);font-size:9px">(28%)</span></span>
+            </div>
+            <div class="pb" style="height:7px"><div class="pf" style="width:28%;background:#dc2626"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:#b45309;display:inline-block"></span>25–50% complete</span>
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700">76 <span style="color:var(--faint);font-size:9px">(25.3%)</span></span>
+            </div>
+            <div class="pb" style="height:7px"><div class="pf" style="width:25.3%;background:#b45309"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:#2563eb;display:inline-block"></span>50–75% complete</span>
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700">75 <span style="color:var(--faint);font-size:9px">(25%)</span></span>
+            </div>
+            <div class="pb" style="height:7px"><div class="pf" style="width:25%;background:#2563eb"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:#15803d;display:inline-block"></span>75–100% complete</span>
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700">65 <span style="color:var(--faint);font-size:9px">(21.7%)</span></span>
+            </div>
+            <div class="pb" style="height:7px"><div class="pf" style="width:21.7%;background:#15803d"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hours Comparison -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Hours Comparison — Planned vs Actual</div><div class="panel-sub">All departments · Portfolio total 787,881 hrs</div></div></div>
+      <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Department</th><th>Planned</th><th>Actual</th><th>Var.</th><th>Ratio</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Distribution</td><td class="mono">111,257</td><td class="mono">112,259</td><td class="pos">+1,002</td><td class="mono" style="color:#dc2626">100.9%</td></tr>
+          <tr><td class="bold">IT &amp; Digital</td><td class="mono">98,441</td><td class="mono">98,834</td><td class="pos">+393</td><td class="mono" style="color:#b45309">100.4%</td></tr>
+          <tr><td class="bold">Asset Mgmt</td><td class="mono">84,110</td><td class="mono">86,724</td><td class="pos">+2,614</td><td class="mono" style="color:#dc2626">103.1%</td></tr>
+          <tr><td class="bold">Finance</td><td class="mono">82,616</td><td class="mono">79,163</td><td class="neg">−3,453</td><td class="mono" style="color:#15803d">95.8%</td></tr>
+          <tr><td class="bold">Capital Projects</td><td class="mono">78,923</td><td class="mono">78,345</td><td class="neg">−578</td><td class="mono" style="color:#15803d">99.3%</td></tr>
+          <tr><td class="bold">Generation</td><td class="mono">77,612</td><td class="mono">78,711</td><td class="pos">+1,099</td><td class="mono" style="color:#b45309">101.4%</td></tr>
+          <tr><td class="bold">Transmission</td><td class="mono">68,719</td><td class="mono">69,920</td><td class="pos">+1,201</td><td class="mono" style="color:#b45309">101.7%</td></tr>
+          <tr><td class="bold">Customer Svc</td><td class="mono">67,691</td><td class="mono">67,166</td><td class="neg">−525</td><td class="mono" style="color:#15803d">99.2%</td></tr>
+          <tr><td class="bold">Safety &amp; Comp.</td><td class="mono">65,679</td><td class="mono">65,086</td><td class="neg">−593</td><td class="mono" style="color:#15803d">99.1%</td></tr>
+          <tr><td class="bold">Operations</td><td class="mono">52,833</td><td class="mono">51,745</td><td class="neg">−1,088</td><td class="mono" style="color:#15803d">97.9%</td></tr>
+          <tr style="background:#eff6ff"><td class="bold" style="color:#2563eb">Total</td><td class="mono" style="font-weight:700">787,881</td><td class="mono" style="font-weight:700">787,955</td><td style="color:var(--faint);font-family:var(--mono)">+74</td><td class="mono" style="color:#15803d;font-weight:700">100.0%</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Variance Chart -->
+  <div class="panel">
+    <div class="panel-header"><div><div class="panel-title">Schedule Variance (SV) by Department — EV minus PV</div><div class="panel-sub">Negative = behind planned schedule · Positive = ahead</div></div></div>
+    <svg viewBox="0 0 860 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <!-- 10 departments, x from 40 to 840 -->
+      <!-- y axis: -8M to +4M → range 12M, height 100px, baseline y=100+(8/12)*100=100-66.7=33.3 → y_zero=100 -->
+      <!-- scale: y = 100 - (val/12)*100 · +4M → y=100-33.3=66.7 · -8M → y=100+66.7=166.7(clip) -->
+      <!-- adjusted: scale 0-120 height, zero at y=90: y=90-(val/9)*80 -->
+      <line x1="40" y1="15" x2="840" y2="15" stroke="#e2e8f0" stroke-width="1"/>
+      <line x1="40" y1="55" x2="840" y2="55" stroke="#e2e8f0" stroke-width="1"/>
+      <line x1="40" y1="90" x2="840" y2="90" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="5,3" opacity=".4"/>
+      <line x1="40" y1="120" x2="840" y2="120" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="36" y="18" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">+$4M</text>
+      <text x="36" y="58" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">+$1M</text>
+      <text x="36" y="93" text-anchor="end" fill="#2563eb" font-size="8" font-family="Inter">$0</text>
+      <text x="36" y="123" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">−$3M</text>
+
+      <!-- Capital Projects SV=+3.3 → y=90-(3.3/9)*80=90-29.3=60.7, bar from 60.7 to 90, h=29.3 -->
+      <rect x="58" y="61" width="50" height="29" fill="#15803d" rx="3"/>
+      <text x="83" y="57" text-anchor="middle" fill="#15803d" font-size="8" font-family="Inter" font-weight="700">+$3.3M</text>
+      <text x="83" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Cap. Proj.</text>
+
+      <!-- Safety SV=+1.2 → y=90-(1.2/9)*80=79.3, h=10.7 -->
+      <rect x="138" y="79" width="50" height="11" fill="#15803d" rx="2"/>
+      <text x="163" y="75" text-anchor="middle" fill="#15803d" font-size="8" font-family="Inter" font-weight="700">+$1.2M</text>
+      <text x="163" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Safety</text>
+
+      <!-- Transmission SV=+0.7 → y=83.8, h=6.2 -->
+      <rect x="218" y="84" width="50" height="6" fill="#15803d" rx="1"/>
+      <text x="243" y="80" text-anchor="middle" fill="#15803d" font-size="8" font-family="Inter">+$0.7M</text>
+      <text x="243" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Transmission</text>
+
+      <!-- Operations SV=+0.5 → y=85.6, h=4.4 -->
+      <rect x="298" y="86" width="50" height="4" fill="#15803d" rx="1"/>
+      <text x="323" y="82" text-anchor="middle" fill="#15803d" font-size="8" font-family="Inter">+$0.5M</text>
+      <text x="323" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Operations</text>
+
+      <!-- Generation SV=-0.2 → y=90, bar down h=1.8 -->
+      <rect x="378" y="90" width="50" height="2" fill="#b45309" rx="1"/>
+      <text x="403" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Generation</text>
+
+      <!-- Asset Mgmt SV=-2.3 → h=20.4 -->
+      <rect x="458" y="90" width="50" height="21" fill="#b45309" rx="2"/>
+      <text x="483" y="122" text-anchor="middle" fill="#b45309" font-size="8" font-family="Inter" font-weight="700">−$2.3M</text>
+      <text x="483" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Asset Mgmt</text>
+
+      <!-- IT SV=-3.4 → h=30.2 -->
+      <rect x="538" y="90" width="50" height="30" fill="#dc2626" rx="3"/>
+      <text x="563" y="130" text-anchor="middle" fill="#dc2626" font-size="8" font-family="Inter" font-weight="700">−$3.4M</text>
+      <text x="563" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">IT &amp; Digital</text>
+
+      <!-- Distribution SV=-4.3 → h=38.2 -->
+      <rect x="618" y="90" width="50" height="38" fill="#dc2626" rx="3"/>
+      <text x="643" y="118" text-anchor="middle" fill="#fff" font-size="8" font-family="Inter" font-weight="700">−$4.3M</text>
+      <text x="643" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Distribution</text>
+
+      <!-- Customer Svc SV=-5.6 → h=49.8 -->
+      <rect x="698" y="90" width="50" height="50" fill="#dc2626" rx="3" opacity=".9"/>
+      <text x="723" y="120" text-anchor="middle" fill="#fff" font-size="8" font-family="Inter" font-weight="700">−$5.6M</text>
+      <text x="723" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Cust. Svc</text>
+
+      <!-- Finance SV=-7.3 → h=64.9 - capped -->
+      <rect x="778" y="90" width="50" height="30" fill="#7c3aed" rx="3"/>
+      <text x="803" y="110" text-anchor="middle" fill="#fff" font-size="9" font-family="Inter" font-weight="800">−$7.3M</text>
+      <text x="803" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="Inter">Finance ⚠</text>
+    </svg>
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#15803d"></div>SV Positive (ahead of schedule)</div>
+      <div class="li"><div class="ld" style="background:#b45309"></div>SV Negative (behind, manageable)</div>
+      <div class="li"><div class="ld" style="background:#dc2626"></div>SV Negative (critical action needed)</div>
+      <div class="li"><div class="ld" style="background:#7c3aed"></div>Worst SV — Finance (−$7.3M)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- P4: RISK & HEALTH                                            -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="view" id="view-risk">
+  <div class="g4">
+    <div class="kpi"><div class="kpi-accent" style="background:#dc2626"></div><div class="kpi-label">Critical (SPI &lt; 0.8)</div><div class="kpi-val" style="color:#dc2626">128</div><div class="kpi-footer"><span class="chip chip-r">⚠ Immediate action</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#b45309"></div><div class="kpi-label">At Risk (CPI 0.8–1.0)</div><div class="kpi-val" style="color:#b45309">156</div><div class="kpi-footer"><span class="chip chip-a">Weekly monitoring</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#15803d"></div><div class="kpi-label">Healthy (CPI ≥ 1.0)</div><div class="kpi-val" style="color:#15803d">144</div><div class="kpi-footer"><span class="chip chip-g">Under budget</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#7c3aed"></div><div class="kpi-label">On Hold</div><div class="kpi-val" style="color:#7c3aed">17</div><div class="kpi-footer"><span class="chip chip-p">Pending review</span></div></div>
+  </div>
+
+  <div class="g2-4060">
+    <!-- CPI vs SPI Scatter -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">CPI vs SPI Scatter — Project Health Quadrants</div><div class="panel-sub">Each dot = 1 project · 20-project sample displayed</div></div></div>
+      <svg viewBox="0 0 420 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <!-- Quadrant backgrounds -->
+        <!-- Plot area: x 50-400, y 20-255. CPI x-axis: 0.6→1.3, SPI y-axis: 0.0→2.0 -->
+        <!-- CPI=1.0: x=50+(0.4/0.7)*350=250. SPI=1.0: y=255-(1/2)*235=137.5 -->
+        <rect x="50" y="20" width="200" height="117" fill="#fffbeb" rx="0" opacity=".6"/><!-- Q2: cost over, sched ahead -->
+        <rect x="250" y="20" width="150" height="117" fill="#f0fdf4" rx="0" opacity=".6"/><!-- Q1: both good -->
+        <rect x="50" y="137" width="200" height="118" fill="#fef2f2" rx="0" opacity=".7"/><!-- Q3: both bad -->
+        <rect x="250" y="137" width="150" height="118" fill="#fffbeb" rx="0" opacity=".5"/><!-- Q4: cost ok sched behind -->
+        <!-- Quadrant labels -->
+        <text x="150" y="38" text-anchor="middle" fill="#b45309" font-size="9" font-family="Inter" font-weight="600">Over Cost · Ahead Schedule</text>
+        <text x="325" y="38" text-anchor="middle" fill="#15803d" font-size="9" font-family="Inter" font-weight="600">★ Healthy: On Budget &amp; Schedule</text>
+        <text x="150" y="248" text-anchor="middle" fill="#dc2626" font-size="9" font-family="Inter" font-weight="700">⚠ CRITICAL — Over Cost &amp; Behind</text>
+        <text x="325" y="248" text-anchor="middle" fill="#b45309" font-size="9" font-family="Inter" font-weight="600">On Budget · Behind Schedule</text>
+        <!-- Axes -->
+        <line x1="50" y1="255" x2="400" y2="255" stroke="#cbd5e1" stroke-width="1.5"/>
+        <line x1="50" y1="20" x2="50" y2="255" stroke="#cbd5e1" stroke-width="1.5"/>
+        <!-- Center lines -->
+        <line x1="250" y1="20" x2="250" y2="255" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+        <line x1="50" y1="137" x2="400" y2="137" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+        <text x="250" y="270" text-anchor="middle" fill="#2563eb" font-size="8" font-family="Inter" font-weight="600">CPI = 1.0</text>
+        <text x="44" y="140" text-anchor="end" fill="#2563eb" font-size="8" font-family="Inter">SPI=1.0</text>
+        <!-- Axis labels -->
+        <text x="55" y="272" fill="#94a3b8" font-size="8" font-family="Inter">CPI 0.6</text>
+        <text x="390" y="272" text-anchor="end" fill="#94a3b8" font-size="8" font-family="Inter">CPI 1.3</text>
+        <!-- x=(CPI-0.6)/0.7*350+50, y=255-(SPI/2)*235 -->
+        <!-- BCH0058: CPI=1.077 SPI=1.464 → x=50+(0.477/0.7)*350=288, y=255-172=83 -->
+        <circle cx="288" cy="83" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0013: CPI=0.94 SPI=0.462 → x=50+(0.34/0.7)*350=220, y=255-54.3=201 -->
+        <circle cx="220" cy="201" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0141: CPI=0.883 SPI=1.31 → x=50+(0.283/0.7)*350=191, y=255-154=101 -->
+        <circle cx="191" cy="101" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0126: CPI=1.08 SPI=1.566 → x=50+(0.48/0.7)*350=290, y=255-184=71 -->
+        <circle cx="290" cy="71" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0115: CPI=0.918 SPI=0.744 → x=209, y=255-87.4=168 -->
+        <circle cx="209" cy="168" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0072: CPI=1.014 SPI=1.69 → x=50+(0.414/0.7)*350=257, y=255-198.6=56 -->
+        <circle cx="257" cy="56" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0053: CPI=0.871 SPI=1.378 → x=185, y=255-162=93 -->
+        <circle cx="185" cy="93" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0280: CPI=1.002 SPI=0.1 → x=251, y=255-11.75=243 -->
+        <circle cx="251" cy="243" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0045: CPI=0.96 SPI=0.846 → x=230, y=255-99.4=156 -->
+        <circle cx="230" cy="156" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0217: CPI=1.025 SPI=1.67 → x=262, y=255-196.2=59 -->
+        <circle cx="262" cy="59" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0017: CPI=1.104 SPI=1.386 → x=302, y=255-163=92 -->
+        <circle cx="302" cy="92" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0016: CPI=0.943 SPI=1.028 → x=221, y=255-120.8=134 -->
+        <circle cx="221" cy="134" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0112: CPI=0.955 SPI=0.434 → x=227, y=255-51=204 -->
+        <circle cx="227" cy="204" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0120: CPI=1.094 SPI=0.938 → x=297, y=255-110.2=145 -->
+        <circle cx="297" cy="145" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0259: CPI=0.946 SPI=0.766 → x=223, y=255-89.9=165 -->
+        <circle cx="223" cy="165" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0215: CPI=1.074 SPI=0.602 → x=287, y=255-70.7=184 -->
+        <circle cx="287" cy="184" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0102: CPI=0.929 SPI=0.138 → x=214, y=255-16.2=239 -->
+        <circle cx="214" cy="239" r="7" fill="#dc2626" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0014: CPI=0.937 SPI=1.292 → x=218, y=255-151.8=103 -->
+        <circle cx="218" cy="103" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0288: CPI=0.938 SPI=1.542 → x=219, y=255-181.2=74 -->
+        <circle cx="219" cy="74" r="7" fill="#b45309" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- BCH0048: CPI=1.048 SPI=1.484 → x=274, y=255-174.4=81 -->
+        <circle cx="274" cy="81" r="7" fill="#15803d" opacity=".85" stroke="#fff" stroke-width="1.5"/>
+        <!-- Portfolio average marker -->
+        <!-- CPI=1.004 SPI=0.952 → x=50+(0.404/0.7)*350=252, y=255-111.9=143 -->
+        <circle cx="252" cy="143" r="11" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+        <circle cx="252" cy="143" r="3" fill="#0f172a"/>
+        <text x="268" y="140" fill="#0f172a" font-size="8" font-family="Inter" font-weight="700">Portfolio avg</text>
+        <text x="268" y="150" fill="#0f172a" font-size="7" font-family="Inter">CPI 1.004 · SPI 0.952</text>
+        <!-- Legend -->
+        <circle cx="55" cy="288" r="5" fill="#15803d" opacity=".85"/>
+        <text x="65" y="292" fill="#475569" font-size="8" font-family="Inter">Healthy (Q1)</text>
+        <circle cx="125" cy="288" r="5" fill="#b45309" opacity=".85"/>
+        <text x="135" y="292" fill="#475569" font-size="8" font-family="Inter">At Risk</text>
+        <circle cx="180" cy="288" r="5" fill="#dc2626" opacity=".85"/>
+        <text x="190" y="292" fill="#475569" font-size="8" font-family="Inter">Critical (Q3)</text>
+        <circle cx="248" cy="288" r="8" fill="none" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="248" cy="288" r="2" fill="#0f172a"/>
+        <text x="260" y="292" fill="#475569" font-size="8" font-family="Inter">Portfolio avg</text>
+      </svg>
+    </div>
+
+    <!-- Risk Score Matrix + Project Health Table -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-header"><div><div class="panel-title">Risk Score Matrix — by Department</div><div class="panel-sub">CPI × SPI composite health rating</div></div></div>
+        <table class="tbl">
+          <thead><tr><th>Department</th><th>CPI</th><th>SPI</th><th>Risk Score</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td class="bold">Finance</td><td class="mono" style="color:#b45309">0.989</td><td class="mono" style="color:#dc2626;font-weight:700">0.802</td><td><div class="risk-band rb-high">HIGH</div></td><td style="font-size:10px;color:#dc2626;font-weight:600">Escalate to PMO</td></tr>
+            <tr><td class="bold">Customer Service</td><td class="mono" style="color:#b45309">0.978</td><td class="mono" style="color:#dc2626">0.870</td><td><div class="risk-band rb-high">HIGH</div></td><td style="font-size:10px;color:#dc2626;font-weight:600">Weekly review</td></tr>
+            <tr><td class="bold">Distribution</td><td class="mono" style="color:#15803d">1.012</td><td class="mono" style="color:#b45309">0.919</td><td><div class="risk-band rb-med">MEDIUM</div></td><td style="font-size:10px;color:#b45309">Monitor schedule</td></tr>
+            <tr><td class="bold">IT &amp; Digital</td><td class="mono" style="color:#15803d;font-weight:700">1.047</td><td class="mono" style="color:#b45309">0.928</td><td><div class="risk-band rb-med">MEDIUM</div></td><td style="font-size:10px;color:#b45309">Monitor schedule</td></tr>
+            <tr><td class="bold">Asset Management</td><td class="mono" style="color:#15803d">1.039</td><td class="mono" style="color:#b45309">0.932</td><td><div class="risk-band rb-med">MEDIUM</div></td><td style="font-size:10px;color:#b45309">Monitor schedule</td></tr>
+            <tr><td class="bold">Generation</td><td class="mono" style="color:#b45309">0.995</td><td class="mono" style="color:#b45309">0.994</td><td><div class="risk-band rb-low">LOW</div></td><td style="font-size:10px;color:#15803d">Standard review</td></tr>
+            <tr><td class="bold">Transmission</td><td class="mono" style="color:#15803d">1.005</td><td class="mono" style="color:#15803d;font-weight:700">1.023</td><td><div class="risk-band rb-low">LOW</div></td><td style="font-size:10px;color:#15803d">No action</td></tr>
+            <tr><td class="bold">Capital Projects</td><td class="mono" style="color:#b45309">0.990</td><td class="mono" style="color:#15803d;font-weight:700">1.103</td><td><div class="risk-band rb-low">LOW</div></td><td style="font-size:10px;color:#15803d">No action</td></tr>
+            <tr><td class="bold">Safety &amp; Comp.</td><td class="mono" style="color:#b45309">0.973</td><td class="mono" style="color:#15803d">1.039</td><td><div class="risk-band rb-low">LOW</div></td><td style="font-size:10px;color:#15803d">No action</td></tr>
+            <tr><td class="bold">Operations</td><td class="mono" style="color:#15803d">1.002</td><td class="mono" style="color:#15803d">1.021</td><td><div class="risk-band rb-low">LOW</div></td><td style="font-size:10px;color:#15803d">No action</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-r">
+        <div class="alert-title" style="color:#dc2626">⚠ 128 projects flagged SPI &lt; 0.8 — Immediate action required</div>
+        <div class="alert-body">Finance (SPI 0.802) and Customer Service (SPI 0.870) carry the highest schedule risk. Combined SV of −$12.9M. Recommend bi-weekly PMO escalation and resource reallocation review.</div>
+      </div>
+      <div class="alert alert-a">
+        <div class="alert-title" style="color:#b45309">⚡ 156 projects CPI 0.8–1.0 — Monitor closely</div>
+        <div class="alert-body">More than half the portfolio is tracking slightly under cost performance. Grid Reliability (+7.1% EAC overrun) and Transmission Line Expansion (+7.4%) are the highest-cost-risk types.</div>
+      </div>
+      <div class="alert alert-g">
+        <div class="alert-title" style="color:#15803d">✓ IT &amp; Digital and Asset Management — best CPI performers</div>
+        <div class="alert-body">CPI 1.047 and 1.039 respectively. Both generating positive earned value. Schedule risk still present but manageable. Recommend showcasing as PMO best-practice departments.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- P5: DETAILED PORTFOLIO                                        -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<div class="view" id="view-portfolio">
+  <div class="g4">
+    <div class="kpi"><div class="kpi-accent" style="background:#2563eb"></div><div class="kpi-label">Total Records</div><div class="kpi-val" style="color:#2563eb">10,800</div><div class="kpi-footer"><span class="chip chip-b">300 × 36 months</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#15803d"></div><div class="kpi-label">Data Completeness</div><div class="kpi-val" style="color:#15803d">100%</div><div class="kpi-footer"><span class="chip chip-g">Zero nulls · Zero gaps</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#7c3aed"></div><div class="kpi-label">Project Types</div><div class="kpi-val" style="color:#7c3aed">10</div><div class="kpi-footer"><span class="chip chip-p">Across 5 regions</span></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:#0f766e"></div><div class="kpi-label">Date Coverage</div><div class="kpi-val" style="color:#0f766e">36 mo</div><div class="kpi-footer"><span class="chip chip-t">Jan 2024 – Dec 2026</span></div></div>
+  </div>
+
+  <div class="g2">
+    <!-- Region Drilldown -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Region Drilldown</div><div class="panel-sub">Budget · CPI · SPI · Completion · Hours</div></div></div>
+      <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Region</th><th>n</th><th>Budget</th><th>Actual</th><th>CPI</th><th>SPI</th><th>Plan Hrs</th><th>Act Hrs</th><th>Completion</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Vancouver Island</td><td class="mono">66</td><td class="mono">$154.3M</td><td class="mono">$80.8M</td><td class="mono" style="color:#15803d;font-weight:700">1.005</td><td class="mono" style="color:#15803d;font-weight:700">1.052</td><td class="mono">177,217</td><td class="mono">176,519</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:50px"><div class="pf" style="width:51.5%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">51.5%</span></div></td></tr>
+          <tr><td class="bold">South</td><td class="mono">64</td><td class="mono">$161.1M</td><td class="mono">$73.1M</td><td class="mono" style="color:#b45309">0.997</td><td class="mono" style="color:#b45309">0.905</td><td class="mono">167,841</td><td class="mono">170,282</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:50px"><div class="pf" style="width:44.8%;background:#b45309"></div></div><span style="font-family:var(--mono);font-size:10px">44.8%</span></div></td></tr>
+          <tr><td class="bold">Lower Mainland</td><td class="mono">61</td><td class="mono">$143.6M</td><td class="mono">$66.4M</td><td class="mono" style="color:#15803d">1.000</td><td class="mono" style="color:#b45309">0.924</td><td class="mono">149,699</td><td class="mono">151,701</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:50px"><div class="pf" style="width:48.1%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">48.1%</span></div></td></tr>
+          <tr><td class="bold">Interior</td><td class="mono">55</td><td class="mono">$132.3M</td><td class="mono">$63.5M</td><td class="mono" style="color:#15803d">1.011</td><td class="mono" style="color:#b45309">0.969</td><td class="mono">160,316</td><td class="mono">160,332</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:50px"><div class="pf" style="width:48.1%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">48.1%</span></div></td></tr>
+          <tr><td class="bold">North</td><td class="mono">54</td><td class="mono">$138.0M</td><td class="mono">$62.2M</td><td class="mono" style="color:#15803d">1.009</td><td class="mono" style="color:#b45309">0.909</td><td class="mono">132,808</td><td class="mono">129,120</td><td><div style="display:flex;align-items:center;gap:5px"><div class="pb" style="width:50px"><div class="pf" style="width:46.9%;background:#b45309"></div></div><span style="font-family:var(--mono);font-size:10px">46.9%</span></div></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- Department Drilldown -->
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">Department Drilldown</div><div class="panel-sub">Full EV metrics · CV · SV · Forecast</div></div></div>
+      <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Department</th><th>n</th><th>CPI</th><th>SPI</th><th>CV</th><th>SV</th><th>Forecast</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Distribution</td><td class="mono">41</td><td class="mono" style="color:#15803d">1.012</td><td class="mono" style="color:#b45309">0.919</td><td class="neg">+$0.6M</td><td class="pos">−$4.3M</td><td class="mono">$111.8M</td></tr>
+          <tr><td class="bold">IT &amp; Digital</td><td class="mono">41</td><td class="mono" style="color:#15803d;font-weight:700">1.047</td><td class="mono" style="color:#b45309">0.928</td><td class="neg">+$2.0M</td><td class="pos">−$3.4M</td><td class="mono">$100.0M</td></tr>
+          <tr><td class="bold">Finance</td><td class="mono">34</td><td class="mono" style="color:#b45309">0.989</td><td class="mono" style="color:#dc2626;font-weight:700">0.802</td><td class="pos">−$0.3M</td><td class="pos">−$7.3M</td><td class="mono">$77.1M</td></tr>
+          <tr><td class="bold">Customer Service</td><td class="mono">33</td><td class="mono" style="color:#b45309">0.978</td><td class="mono" style="color:#dc2626">0.870</td><td class="pos">−$0.9M</td><td class="pos">−$5.6M</td><td class="mono">$91.1M</td></tr>
+          <tr><td class="bold">Generation</td><td class="mono">29</td><td class="mono" style="color:#b45309">0.995</td><td class="mono" style="color:#b45309">0.994</td><td class="pos">−$0.1M</td><td class="pos">−$0.2M</td><td class="mono">$65.5M</td></tr>
+          <tr><td class="bold">Capital Projects</td><td class="mono">28</td><td class="mono" style="color:#b45309">0.990</td><td class="mono" style="color:#15803d;font-weight:700">1.103</td><td class="pos">−$0.4M</td><td class="neg">+$3.3M</td><td class="mono">$67.7M</td></tr>
+          <tr><td class="bold">Asset Management</td><td class="mono">27</td><td class="mono" style="color:#15803d">1.039</td><td class="mono" style="color:#b45309">0.932</td><td class="neg">+$1.2M</td><td class="pos">−$2.3M</td><td class="mono">$72.0M</td></tr>
+          <tr><td class="bold">Transmission</td><td class="mono">26</td><td class="mono" style="color:#15803d">1.005</td><td class="mono" style="color:#15803d">1.023</td><td class="neg">+$0.2M</td><td class="neg">+$0.7M</td><td class="mono">$69.2M</td></tr>
+          <tr><td class="bold">Safety &amp; Comp.</td><td class="mono">21</td><td class="mono" style="color:#b45309">0.973</td><td class="mono" style="color:#15803d">1.039</td><td class="pos">−$0.9M</td><td class="neg">+$1.2M</td><td class="mono">$64.1M</td></tr>
+          <tr><td class="bold">Operations</td><td class="mono">20</td><td class="mono" style="color:#15803d">1.002</td><td class="mono" style="color:#15803d">1.021</td><td class="neutral">$0.0M</td><td class="neg">+$0.5M</td><td class="mono">$50.5M</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project-Level Table -->
+  <div class="panel">
+    <div class="panel-header">
+      <div><div class="panel-title">Project-Level Detail — Representative Records</div><div class="panel-sub">300 projects · Jan 2024 – Sep 2026 · EV metrics per project</div></div>
+      <div class="panel-badge">Export CSV →</div>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Project ID</th><th>Project Name</th><th>Dept</th><th>Type</th><th>Region</th><th>Status</th>
+          <th>Budget</th><th>Actual</th><th>Forecast</th><th>CPI</th><th>SPI</th><th>% Complete</th><th>Data Quality</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0001</td><td class="bold">Transmission Line Exp. 1</td><td>Distribution</td><td>Trans. Line</td><td>Interior</td><td><span class="chip chip-b">In Progress</span></td><td class="mono">$2.34M</td><td class="mono">$1.05M</td><td class="mono">$2.59M</td><td class="mono" style="color:#b45309">0.992</td><td class="mono" style="color:#15803d">1.038</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:49.6%;background:#2563eb"></div></div><span style="font-family:var(--mono);font-size:10px">49.6%</span></div></td><td><span class="chip chip-g">✓ Clean</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0002</td><td class="bold">EV Infrastructure 2</td><td>Distribution</td><td>EV Infra.</td><td>Van. Island</td><td><span class="chip chip-b">In Progress</span></td><td class="mono">$3.59M</td><td class="mono">$2.74M</td><td class="mono">$3.89M</td><td class="mono" style="color:#b45309">0.981</td><td class="mono" style="color:#b45309">0.988</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:68%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">68%</span></div></td><td><span class="chip chip-g">✓ Clean</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0058</td><td class="bold">Grid Reliability 58</td><td>Asset Mgmt</td><td>Grid</td><td>North</td><td><span class="chip chip-b">In Progress</span></td><td class="mono">$2.10M</td><td class="mono">$0.90M</td><td class="mono">$2.20M</td><td class="mono" style="color:#15803d;font-weight:700">1.077</td><td class="mono" style="color:#15803d;font-weight:700">1.464</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:78%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">78%</span></div></td><td><span class="chip chip-g">✓ Clean</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0013</td><td class="bold">SAP Enhancement 13</td><td>IT &amp; Digital</td><td>SAP</td><td>South</td><td><span class="chip chip-b">In Progress</span></td><td class="mono">$1.80M</td><td class="mono">$1.10M</td><td class="mono">$2.00M</td><td class="mono" style="color:#b45309">0.940</td><td class="mono" style="color:#dc2626;font-weight:700">0.462</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:23%;background:#dc2626"></div></div><span style="font-family:var(--mono);font-size:10px">23%</span></div></td><td><span class="chip chip-a">⚠ Low SPI</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0300</td><td class="bold">Substation Upgrade 300</td><td>Operations</td><td>Substation</td><td>North</td><td><span class="chip chip-g">Completed</span></td><td class="mono">$4.81M</td><td class="mono">$2.99M</td><td class="mono">$5.67M</td><td class="mono" style="color:#15803d">1.013</td><td class="mono" style="color:#b45309">0.781</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:100%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">100%</span></div></td><td><span class="chip chip-g">✓ Clean</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0072</td><td class="bold">Dam Modernization 72</td><td>Generation</td><td>Dam Mod.</td><td>North</td><td><span class="chip chip-g">Completed</span></td><td class="mono">$3.10M</td><td class="mono">$1.50M</td><td class="mono">$3.20M</td><td class="mono" style="color:#15803d;font-weight:700">1.014</td><td class="mono" style="color:#15803d;font-weight:700">1.690</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:95%;background:#15803d"></div></div><span style="font-family:var(--mono);font-size:10px">95%</span></div></td><td><span class="chip chip-g">✓ Clean</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0280</td><td class="bold">Vegetation Mgmt 280</td><td>Distribution</td><td>Veg. Mgmt</td><td>Lower ML.</td><td><span class="chip chip-p">Planning</span></td><td class="mono">$1.60M</td><td class="mono">$0.20M</td><td class="mono">$1.80M</td><td class="mono" style="color:#15803d">1.002</td><td class="mono" style="color:#dc2626;font-weight:700">0.100</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:5%;background:#dc2626"></div></div><span style="font-family:var(--mono);font-size:10px">5%</span></div></td><td><span class="chip chip-r">⚠ Low SPI</span></td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--faint)">BCH0215</td><td class="bold">Smart Meter Program 215</td><td>Generation</td><td>Smart Meter</td><td>South</td><td><span class="chip chip-p">Planning</span></td><td class="mono">$2.40M</td><td class="mono">$0.80M</td><td class="mono">$2.60M</td><td class="mono" style="color:#15803d">1.074</td><td class="mono" style="color:#b45309">0.602</td><td><div style="display:flex;align-items:center;gap:4px"><div class="pb" style="width:40px"><div class="pf" style="width:31%;background:#b45309"></div></div><span style="font-family:var(--mono);font-size:10px">31%</span></div></td><td><span class="chip chip-a">⚠ Review</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- Data Quality Summary -->
+    <div class="dq-grid">
+      <div class="dq-card">
+        <div class="dq-val" style="color:#2563eb">10,800</div>
+        <div class="dq-label">Total Rows</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#15803d">0</div>
+        <div class="dq-label">Null Values</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#15803d">0</div>
+        <div class="dq-label">Zero-Cost Records</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#0f766e">10</div>
+        <div class="dq-label">Distinct Project Types</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#7c3aed">5</div>
+        <div class="dq-label">Regions Covered</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#15803d">100%</div>
+        <div class="dq-label">Date Coverage</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#15803d">300</div>
+        <div class="dq-label">Unique Projects</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-val" style="color:#b45309">36</div>
+        <div class="dq-label">Months (Jan 24–Dec 26)</div>
+      </div>
+    </div>
+
+    <!-- Status Summary -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:140px;background:var(--accent-soft);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--accent)">167</div>
+        <div style="font-size:10px;color:var(--muted)">🔵 In Progress</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:#f5f3ff;border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:#7c3aed">49</div>
+        <div style="font-size:10px;color:var(--muted)">🟣 Planning</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:var(--green-soft);border:1px solid rgba(21,128,61,.2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:#15803d">67</div>
+        <div style="font-size:10px;color:var(--muted)">🟢 Completed</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--faint)">17</div>
+        <div style="font-size:10px;color:var(--muted)">⏸ On Hold</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function go(id, el, title) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = title;
+  document.querySelector('.canvas').scrollTop = 0;
+}
+// Slicer toggle visual only
+document.querySelectorAll('.slicer-pill').forEach(pill => {
+  pill.addEventListener('click', () => pill.classList.toggle('on'));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "Project Performance Dashboard",
+  "dataColors": [
+    "#0F172A",
+    "#2563EB",
+    "#10B981",
+    "#F59E0B",
+    "#EF4444",
+    "#7C3AED",
+    "#14B8A6",
+    "#F97316"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#111827",
+  "tableAccent": "#2563EB",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [
+          {
+            "show": true,
+            "fontSize": 20,
+            "color": { "solid": { "color": "#0F172A" } }
+          }
+        ],
+        "labels": [
+          {
+            "color": { "solid": { "color": "#111827" } }
+          }
+        ]
+      }
+    }
+  }
+}

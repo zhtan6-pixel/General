@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Performance Dashboard Mockup</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #dfe7f1;
+      --ink: #0f172a;
+      --muted: #5b6475;
+      --blue: #2563eb;
+      --navy: #0f172a;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+      --teal: #14b8a6;
+      --gray: #94a3b8;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .shell {
+      max-width: 1500px;
+      margin: 0 auto;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .topbar .title {
+      font-size: 18px;
+    }
+
+    .topbar .right {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background: #eef3fb;
+      padding: 10px 18px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab {
+      padding: 10px 14px;
+      border-radius: 10px 10px 0 0;
+      background: transparent;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-bottom: none;
+    }
+
+    .tab.active {
+      background: var(--panel);
+      color: var(--navy);
+      border-color: var(--line);
+    }
+
+    .content {
+      padding: 18px;
+      background: var(--panel);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .chip {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 110px;
+    }
+
+    .kpi {
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kpi label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .kpi .value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.1;
+    }
+
+    .kpi .trend {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .kpi.red .trend { color: var(--red); }
+    .kpi.amber .trend { color: var(--amber); }
+
+    .chart-box {
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-box h4, .table-card h4 {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+      color: var(--navy);
+    }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      height: 170px;
+      gap: 12px;
+      padding-top: 12px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(180deg, var(--blue), #6ea2ff);
+      min-height: 30%;
+    }
+
+    .bar.alt { background: linear-gradient(180deg, var(--green), #76d8b8); }
+    .bar.warn { background: linear-gradient(180deg, var(--amber), #f7cd73); }
+
+    .small-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      position: relative;
+    }
+
+    .donut {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--blue) 0 35%,
+        var(--green) 35% 68%,
+        var(--amber) 68% 88%,
+        var(--red) 88% 100%
+      );
+      position: relative;
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 28px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-left: 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .table-card {
+      min-height: 260px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f5f7fa;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .healthy { background: rgba(16,185,129,0.12); color: var(--green); }
+    .watch { background: rgba(245,158,11,0.12); color: var(--amber); }
+    .risk { background: rgba(239,68,68,0.12); color: var(--red); }
+
+    .scatter {
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(to right, rgba(37,99,235,0.04), rgba(16,185,129,0.04));
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .scatter-axis {
+      position: absolute;
+      inset: 18px;
+      border-left: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .bubble {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(37,99,235,0.6);
+      border: 1px solid rgba(15,23,42,0.2);
+      box-shadow: 0 4px 10px rgba(37,99,235,0.22);
+    }
+
+    .bubble.green { background: rgba(16,185,129,0.6); }
+    .bubble.amber { background: rgba(245,158,11,0.6); }
+    .bubble.red { background: rgba(239,68,68,0.6); }
+
+    .linechart {
+      display: flex;
+      align-items: end;
+      height: 160px;
+      gap: 14px;
+      padding: 0 8px 12px 8px;
+    }
+
+    .linechart .point {
+      flex: 1;
+      position: relative;
+      height: 100%;
+    }
+
+    .linechart .point::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 2px;
+      height: 100%;
+      background: rgba(37,99,235,0.2);
+      transform: translateX(-50%);
+    }
+
+    .linechart .point span {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 26px;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(180deg, #7aa9ff, var(--blue));
+    }
+
+    .linechart .point:nth-child(even) span {
+      background: linear-gradient(180deg, #82d7b5, var(--green));
+    }
+
+    .page-title {
+      margin: 0 0 16px 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    @media (max-width: 1100px) {
+      .grid-6, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .grid-6, .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .content { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Project Performance Dashboard</div>
+        <div class="right">
+          <span>Department</span>
+          <span>Region</span>
+          <span>Portfolio</span>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <div class="tab active">Overview</div>
+        <div class="tab">Cost</div>
+        <div class="tab">Delivery</div>
+        <div class="tab">Risk</div>
+        <div class="tab">Portfolio</div>
+      </div>
+
+      <div class="content">
+        <h2 class="page-title">Page 1: Executive Overview</h2>
+
+        <div class="filters">
+          <div class="chip">Department: All</div>
+          <div class="chip">Region: All</div>
+          <div class="chip">Project Type: All</div>
+          <div class="chip">Project Manager: All</div>
+          <div class="chip">Fiscal Year: 2024</div>
+        </div>
+
+        <div class="grid grid-6">
+          <div class="card kpi">
+            <label>Total Budget</label>
+            <div class="value">$54.8M</div>
+            <div class="trend">+8.2% vs plan</div>
+          </div>
+          <div class="card kpi">
+            <label>Actual Cost</label>
+            <div class="value">$41.3M</div>
+            <div class="trend">+3.1% vs budget</div>
+          </div>
+          <div class="card kpi">
+            <label>Forecast Cost</label>
+            <div class="value">$47.6M</div>
+            <div class="trend">+6.7% forecast</div>
+          </div>
+          <div class="card kpi">
+            <label>Actual Revenue</label>
+            <div class="value">$36.9M</div>
+            <div class="trend">+12.4% YoY</div>
+          </div>
+          <div class="card kpi">
+            <label>Project Margin</label>
+            <div class="value">-$4.4M</div>
+            <div class="trend red">-9.8% margin</div>
+          </div>
+          <div class="card kpi">
+            <label>Avg CPI</label>
+            <div class="value">1.03</div>
+            <div class="trend">Above target</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card chart-box">
+            <h4>Project Cost by Project</h4>
+            <div class="bars">
+              <div class="bar-col"><div class="bar" style="height:35%"></div><div class="small-label">P1</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:55%"></div><div class="small-label">P2</div></div>
+              <div class="bar-col"><div class="bar" style="height:68%"></div><div class="small-label">P3</div></div>
+              <div class="bar-col"><div class="bar warn" style="height:78%"></div><div class="small-label">P4</div></div>
+              <div class="bar-col"><div class="bar" style="height:63%"></div><div class="small-label">P5</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:87%"></div><div class="small-label">P6</div></div>
+            </div>
+          </div>
+
+          <div class="card chart-box">
+            <h4>Portfolio by Region</h4>
+            <div class="bars">
+              <div class="bar-col"><div class="bar" style="height:52%"></div><div class="small-label">AMER</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:70%"></div><div class="small-label">EMEA</div></div>
+              <div class="bar-col"><div class="bar warn" style="height:82%"></div><div class="small-label">APAC</div></div>
+              <div class="bar-col"><div class="bar" style="height:60%"></div><div class="small-label">Global</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card chart-box">
+            <h4>Project Type Mix</h4>
+            <div class="donut-wrap">
+              <div class="donut"></div>
+              <div class="legend">
+                <div class="legend-item"><span class="dot" style="background: var(--blue);"></span> Capital 35%</div>
+                <div class="legend-item"><span class="dot" style="background: var(--green);"></span> Revenue 33%</div>
+                <div class="legend-item"><span class="dot" style="background: var(--amber);"></span> Compliance 20%</div>
+                <div class="legend-item"><span class="dot" style="background: var(--red);"></span> Other 12%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <h4>Department Overview</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Budget</th>
+                  <th>Actual</th>
+                  <th>Margin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>IT</td><td>$19.2M</td><td>$15.8M</td><td>$3.4M</td></tr>
+                <tr><td>Operations</td><td>$14.8M</td><td>$12.4M</td><td>$2.4M</td></tr>
+                <tr><td>ESG</td><td>$9.3M</td><td>$8.9M</td><td>$0.4M</td></tr>
+                <tr><td>Sales</td><td>$11.5M</td><td>$10.2M</td><td>$1.3M</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Project Performance Dashboard</div>
+        <div class="right"><span>Cost Performance</span></div>
+      </div>
+      <div class="content">
+        <h2 class="page-title">Page 2: Cost Performance</h2>
+
+        <div class="grid grid-4">
+          <div class="card kpi"><label>Budget</label><div class="value">$54.8M</div><div class="trend">Baseline</div></div>
+          <div class="card kpi"><label>Actual Cost</label><div class="value">$41.3M</div><div class="trend">Within plan</div></div>
+          <div class="card kpi"><label>Forecast Cost</label><div class="value">$47.6M</div><div class="trend amber">Watch</div></div>
+          <div class="card kpi"><label>Cost Variance</label><div class="value">+$6.3M</div><div class="trend red">Above target</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card chart-box">
+            <h4>Actual vs Forecast Cost</h4>
+            <div class="bars">
+              <div class="bar-col"><div class="bar" style="height:40%"></div><div class="small-label">Q1</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:60%"></div><div class="small-label">Q2</div></div>
+              <div class="bar-col"><div class="bar" style="height:75%"></div><div class="small-label">Q3</div></div>
+              <div class="bar-col"><div class="bar warn" style="height:90%"></div><div class="small-label">Q4</div></div>
+            </div>
+          </div>
+
+          <div class="card chart-box">
+            <h4>CPI by Project</h4>
+            <div class="linechart">
+              <div class="point"><span style="height:42%"></span></div>
+              <div class="point"><span style="height:58%"></span></div>
+              <div class="point"><span style="height:66%"></span></div>
+              <div class="point"><span style="height:49%"></span></div>
+              <div class="point"><span style="height:80%"></span></div>
+              <div class="point"><span style="height:90%"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Project Performance Dashboard</div>
+        <div class="right"><span>Delivery</span></div>
+      </div>
+      <div class="content">
+        <h2 class="page-title">Page 3: Schedule & Delivery</h2>
+
+        <div class="grid grid-4">
+          <div class="card kpi"><label>Avg SPI</label><div class="value">0.92</div><div class="trend red">Below target</div></div>
+          <div class="card kpi"><label>Milestone Completion</label><div class="value">72.5%</div><div class="trend amber">In progress</div></div>
+          <div class="card kpi"><label>Schedule Variance</label><div class="value">+12 days</div><div class="trend red">Delayed</div></div>
+          <div class="card kpi"><label>Actual Hours</label><div class="value">45,230</div><div class="trend">Run rate</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card chart-box">
+            <h4>Schedule Variance by Project</h4>
+            <div class="bars">
+              <div class="bar-col"><div class="bar red" style="height:35%; background: linear-gradient(180deg, #f7a2a2, var(--red));"></div><div class="small-label">P1</div></div>
+              <div class="bar-col"><div class="bar warn" style="height:50%; background: linear-gradient(180deg, #f7d57e, var(--amber));"></div><div class="small-label">P2</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:68%;"></div><div class="small-label">P3</div></div>
+              <div class="bar-col"><div class="bar" style="height:72%;"></div><div class="small-label">P4</div></div>
+              <div class="bar-col"><div class="bar red" style="height:85%; background: linear-gradient(180deg, #f7a2a2, var(--red));"></div><div class="small-label">P5</div></div>
+            </div>
+          </div>
+
+          <div class="card chart-box">
+            <h4>Planned vs Actual Hours</h4>
+            <div class="bars">
+              <div class="bar-col"><div class="bar" style="height:50%"></div><div class="small-label">P1</div></div>
+              <div class="bar-col"><div class="bar alt" style="height:68%"></div><div class="small-label">P2</div></div>
+              <div class="bar-col"><div class="bar" style="height:76%"></div><div class="small-label">P3</div></div>
+              <div class="bar-col"><div class="bar warn" style="height:82%"></div><div class="small-label">P4</div></div>
+              <div class="bar-col"><div class="bar" style="height:88%"></div><div class="small-label">P5</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Project Performance Dashboard</div>
+        <div class="right"><span>Risk & Health</span></div>
+      </div>
+      <div class="content">
+        <h2 class="page-title">Page 4: Risk & Health</h2>
+
+        <div class="grid grid-4">
+          <div class="card kpi"><label>Avg Risk Score</label><div class="value">5.8</div><div class="trend amber">Medium risk</div></div>
+          <div class="card kpi"><label>At Risk</label><div class="value">8</div><div class="trend red">Critical</div></div>
+          <div class="card kpi"><label>Healthy</label><div class="value">12</div><div class="trend green">Stable</div></div>
+          <div class="card kpi"><label>Watch</label><div class="value">6</div><div class="trend amber">Monitor</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card chart-box">
+            <h4>CPI vs SPI</h4>
+            <div class="scatter">
+              <div class="scatter-axis"></div>
+              <div class="bubble" style="left: 16%; top: 58%;"></div>
+              <div class="bubble green" style="left: 28%; top: 38%;"></div>
+              <div class="bubble amber" style="left: 45%; top: 52%;"></div>
+              <div class="bubble red" style="left: 65%; top: 63%;"></div>
+              <div class="bubble" style="left: 76%; top: 28%;"></div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <h4>Risk / Status Table</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Risk</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>PRJ-2001</td><td>High</td><td>9</td><td><span class="status risk">At Risk</span></td></tr>
+                <tr><td>PRJ-2002</td><td>Medium</td><td>6</td><td><span class="status watch">Watch</span></td></tr>
+                <tr><td>PRJ-2003</td><td>Low</td><td>3</td><td><span class="status healthy">Healthy</span></td></tr>
+                <tr><td>PRJ-2004</td><td>High</td><td>8</td><td><span class="status risk">At Risk</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Project Performance Dashboard</div>
+        <div class="right"><span>Portfolio Detail</span></div>
+      </div>
+      <div class="content">
+        <h2 class="page-title">Page 5: Portfolio Detail</h2>
+
+        <div class="grid grid-6">
+          <div class="card kpi"><label>Projects</label><div class="value">36</div><div class="trend">Active</div></div>
+          <div class="card kpi"><label>Capital</label><div class="value">14</div><div class="trend">38%</div></div>
+          <div class="card kpi"><label>Revenue</label><div class="value">9</div><div class="trend">25%</div></div>
+          <div class="card kpi"><label>Compliance</label><div class="value">7</div><div class="trend">19%</div></div>
+          <div class="card kpi"><label>Watch List</label><div class="value">6</div><div class="trend amber">Monitor</div></div>
+          <div class="card kpi"><label>At Risk</label><div class="value">8</div><div class="trend red">Action</div></div>
+        </div>
+
+        <div class="card table-card" style="margin-top:18px;">
+          <h4>Project Portfolio Detail</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Department</th>
+                <th>Region</th>
+                <th>Budget</th>
+                <th>Actual</th>
+                <th>Margin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>PRJ-2001</td><td>IT</td><td>EMEA</td><td>$14.8M</td><td>$9.6M</td><td>$1.2M</td><td><span class="status risk">At Risk</span></td></tr>
+              <tr><td>PRJ-2002</td><td>Operations</td><td>APAC</td><td>$24.3M</td><td>$21.2M</td><td>$3.4M</td><td><span class="status watch">Watch</span></td></tr>
+              <tr><td>PRJ-2003</td><td>IT</td><td>AMER</td><td>$3.8M</td><td>$3.2M</td><td>$0.6M</td><td><span class="status healthy">Healthy</span></td></tr>
+              <tr><td>PRJ-2004</td><td>ESG</td><td>EMEA</td><td>$8.7M</td><td>$7.5M</td><td>$0.9M</td><td><span class="status risk">At Risk</span></td></tr>
+              <tr><td>PRJ-2005</td><td>Sales</td><td>Global</td><td>$6.7M</td><td>$5.9M</td><td>$1.1M</td><td><span class="status healthy">Healthy</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
