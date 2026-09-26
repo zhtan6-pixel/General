@@ -1,0 +1,132 @@
+table BC_Hydro_Departmental_Projects
+	lineageTag: 85bdaf25-d17d-4183-bca7-1ff627ab419d
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c3ebe6d6-d6ed-4542-aaa9-1a43c65c34c9
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ProjectID
+		dataType: string
+		lineageTag: 736e8a0c-1afc-4b2b-85df-862f67fd9661
+		summarizeBy: none
+		sourceColumn: ProjectID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProjectName
+		dataType: string
+		lineageTag: cc7d30a8-13e9-4b8b-b51a-a9e98bb51b57
+		summarizeBy: none
+		sourceColumn: ProjectName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: d278a6a1-5073-46db-9e94-6ec4b9eea7ab
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProjectType
+		dataType: string
+		lineageTag: 471b76fd-96c8-4260-b004-c1cbf7509568
+		summarizeBy: none
+		sourceColumn: ProjectType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 71817844-d033-4a21-9ec6-6a10b0949443
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column ApprovedBudget
+		dataType: int64
+		formatString: 0
+		lineageTag: 3bb255de-fca7-4915-a463-19bf47587eca
+		summarizeBy: sum
+		sourceColumn: ApprovedBudget
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActualCost
+		dataType: double
+		lineageTag: 0f94b416-0323-492b-949c-da249c7d1bfa
+		summarizeBy: sum
+		sourceColumn: ActualCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ForecastCost
+		dataType: double
+		lineageTag: d3fb6cf8-3520-41a5-94ce-485a46e96cb0
+		summarizeBy: sum
+		sourceColumn: ForecastCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PlannedHours
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f9da40c-3b18-4519-a010-862359bc14f3
+		summarizeBy: sum
+		sourceColumn: PlannedHours
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActualHours
+		dataType: double
+		lineageTag: 530649b3-1c3b-4537-961b-6cbcf4dac283
+		summarizeBy: sum
+		sourceColumn: ActualHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PercentComplete
+		dataType: double
+		lineageTag: dcf4baa3-024b-4682-902d-990b54d08f37
+		summarizeBy: sum
+		sourceColumn: PercentComplete
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Region
+		dataType: string
+		lineageTag: df492362-526c-4c9e-8a7f-544142d2ca31
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BC_Hydro_Departmental_Projects = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Work\BCHYDRO\Files\BC_Hydro_Departmental_Projects.csv"),[Delimiter=",", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"ProjectID", type text}, {"ProjectName", type text}, {"Department", type text}, {"ProjectType", type text}, {"Status", type text}, {"ApprovedBudget", Int64.Type}, {"ActualCost", type number}, {"ForecastCost", type number}, {"PlannedHours", Int64.Type}, {"ActualHours", type number}, {"PercentComplete", type number}, {"Region", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
